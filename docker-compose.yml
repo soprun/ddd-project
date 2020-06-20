@@ -5,13 +5,12 @@ services:
     build:
       context: .
       dockerfile: ./docker/nginx/Dockerfile
-    command: [nginx-debug, '-g', 'daemon off;']
     container_name: nginx
     depends_on:
       - app
     ports:
-      - 80:80
-      - 443:443
+      - 8080:80
+      - 4433:443
 
   app:
     build:
@@ -20,3 +19,6 @@ services:
     container_name: app
     volumes:
       - .:/var/app:rw,cached
+    environment:
+      - APP_ENV=${APP_ENV}
+      - APP_SECRET=${APP_SECRET}

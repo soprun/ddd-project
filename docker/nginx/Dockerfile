@@ -8,6 +8,6 @@ COPY /docker/nginx/nginx.conf /etc/nginx/nginx.conf
 
 COPY /public /var/app/public
 
-CMD ["nginx", "-g", "daemon off;"]
-
 EXPOSE 80 443
+
+CMD ["nginx", "-g", "daemon off;"]

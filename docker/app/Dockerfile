@@ -1,7 +1,7 @@
-FROM php:7.4-fpm-alpine
+FROM php:fpm-alpine
 
 # installation system packages
-RUN apk add --no-cache \
+RUN apk --update --no-cache add \
   git \
   bash \
   zip \
@@ -13,12 +13,22 @@ RUN apk add --no-cache \
 
 # use the default production configuration
 RUN mv "$PHP_INI_DIR/php.ini-development" "$PHP_INI_DIR/php.ini"
+# RUN ln -s "${PHP_INI_DIR}/php.ini-production" "${PHP_INI_DIR}/php.ini"
+#RUN ln -s "${PHP_INI_DIR}/php.ini-development" "${PHP_INI_DIR}/php.ini"
+# COPY app.ini "$PHP_INI_DIR/conf.d/app.ini"
 
 # install composer
+# https://getcomposer.org/doc/03-cli.md#composer-allow-superuser
 ENV COMPOSER_ALLOW_SUPERUSER=1
+ENV PATH="${PATH}:/root/.composer/vendor/bin"
+
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-RUN composer global require hirak/prestissimo --prefer-dist --no-plugins --no-scripts
+# install Symfony Flex globally to speed up download of Composer packages (parallelized prefetching)
+RUN set -eux; \
+	composer global require "symfony/flex" --prefer-dist --no-progress --no-suggest --classmap-authoritative; \
+	composer global require "hirak/prestissimo" --prefer-dist --no-progress --no-suggest --classmap-authoritative; \
+	composer clear-cache
 
 # change working directory
 WORKDIR /var/app
@@ -27,6 +37,7 @@ WORKDIR /var/app
 COPY composer.json composer.json
 COPY composer.lock composer.lock
 COPY symfony.lock symfony.lock
+
 RUN composer install --prefer-dist --no-scripts --no-dev --no-autoloader && rm -rf /root/.composer
 
 # copy source files to workdir
@@ -42,4 +53,4 @@ RUN composer dump-autoload --no-scripts --no-dev --optimize
 EXPOSE 9000
 
 # run application
-CMD ["php-fpm", "--nodaemonize"]
+CMD ["php-fpm"]
