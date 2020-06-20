@@ -20,21 +20,23 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 RUN composer global require hirak/prestissimo --prefer-dist --no-plugins --no-scripts
 
+# change working directory
+WORKDIR /var/app
+
 # install dependencies
-# COPY composer.json composer.json
-# RUN composer install --prefer-dist --no-scripts --no-dev --no-autoloader && rm -rf /root/.composer
+COPY composer.json composer.json
+COPY composer.lock composer.lock
+COPY symfony.lock symfony.lock
+RUN composer install --prefer-dist --no-scripts --no-dev --no-autoloader && rm -rf /root/.composer
 
 # copy source files to workdir
 COPY . /var/app
-
-# change working directory
-WORKDIR /var/app
 
 ENV PATH="${PATH}:/var/app/bin"
 ENV PATH="${PATH}:/var/app/vendor/bin"
 
 # finish composer
-# RUN composer dump-autoload --no-scripts --no-dev --optimize
+RUN composer dump-autoload --no-scripts --no-dev --optimize
 
 # expose port outside
 EXPOSE 9000
