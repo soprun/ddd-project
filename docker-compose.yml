@@ -1,0 +1,10 @@
+version: "3.7"
+
+services:
+  app:
+    build:
+      dockerfile: ./Dockerfile
+      context: .
+    container_name: app
+    volumes:
+      - .:/var/app:rw,cached
