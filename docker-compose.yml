@@ -9,8 +9,8 @@ services:
     depends_on:
       - app
     ports:
-      - 8080:80
-      - 4433:443
+      - 80:80
+      - 433:443
 
   app:
     build:
@@ -22,3 +22,19 @@ services:
     environment:
       - APP_ENV=${APP_ENV}
       - APP_SECRET=${APP_SECRET}
+
+  vault:
+    image: vault:latest
+    volumes:
+      - ./docker/vault/config:/vault/config
+      - ./docker/vault/policies:/vault/policies
+      - ./docker/vault/data:/vault/data
+    ports:
+      - 8200:8200
+    environment:
+      - VAULT_ADDR=${VAULT_ADDR}
+      - VAULT_API_ADDR=${VAULT_API_ADDR}
+      - VAULT_ADDRESS=${VAULT_ADDRESS}
+    cap_add:
+      - IPC_LOCK
+    command: vault server -config=/vault/config/vault.json
