@@ -33,9 +33,6 @@ jobs:
         if: steps.composer-cache.outputs.cache-hit != 'true'
         run: composer install --prefer-dist --no-progress --no-suggest
 
-      - name: Setup problem matchers for PHPUnit
-        run: echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
-
       # Add a test script to composer.json, for instance: "test": "vendor/bin/phpunit"
       # Docs: https://getcomposer.org/doc/articles/scripts.md
       #
@@ -58,6 +55,7 @@ jobs:
       #     path: build/logs/clover.xml
 
   phpstan-analysis:
+    need: build
     runs-on: ubuntu-latest
     name: PHPStan static code analysis
     steps:
