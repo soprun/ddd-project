@@ -24,6 +24,11 @@ jobs:
           extensions: mbstring, bcmath # Setup any required extensions for tests
           coverage: pcov # disable xdebug, pcov
           tools: cs2pr, phpstan
+        env:
+          APP_URL: ${{ secrets.APP_URL }}
+          APP_DOMAIN: ${{ secrets.APP_DOMAIN }}
+          APP_SECRET: ${{ secrets.APP_SECRET }}
+          APP_RELEASE: ${{ github.sha }}
 
       - name: Cache Composer packages
         id: composer-cache
@@ -36,6 +41,9 @@ jobs:
       - name: Install dependencies
         if: steps.composer-cache.outputs.cache-hit != 'true'
         run: composer install --prefer-dist --no-progress --no-suggest --dev --no-interaction
+
+      - name: Run about
+        run: php bin/console about
 
       - name: Run static code analysis
         run: phpstan analyse src --error-format=checkstyle | cs2pr
@@ -50,11 +58,6 @@ jobs:
 
       - name: Compiles .env files to .env.local.php.
         run: composer symfony:dump-env prod
-        env:
-          APP_URL: ${{ secrets.APP_URL }}
-          APP_DOMAIN: ${{ secrets.APP_DOMAIN }}
-          APP_SECRET: ${{ secrets.APP_SECRET }}
-          APP_RELEASE: ${{ github.sha }}
 
       - name: Put built env vars in artifacts
         uses: actions/upload-artifact@v1
