@@ -17,11 +17,13 @@ jobs:
         with:
           php-version: 7.4
           coverage: pcov
+          tools: phpunit
 
       - run: composer install --no-progress
 
+      - run: phpunit --coverage-clover build/logs/clover.xml
+
       - run: |
-          vendor/bin/phpunit --coverage-clover build/logs/clover.xml
           # coveralls.io
           wget https://github.com/php-coveralls/php-coveralls/releases/download/v2.1.0/php-coveralls.phar
           php php-coveralls.phar --verbose
