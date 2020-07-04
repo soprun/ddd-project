@@ -7,6 +7,8 @@
          colors="true"
          verbose="true"
          bootstrap="tests/bootstrap.php"
+         beStrictAboutOutputDuringTests="true"
+         beStrictAboutTodoAnnotatedTests="true"
 >
     <php>
         <ini name="error_reporting" value="-1"/>
