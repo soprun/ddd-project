@@ -20,26 +20,25 @@ jobs:
         run: composer validate
 
   build:
-    needs: check_composer
+    # needs: unit_tests
     runs-on: ubuntu-latest
     name: Building applications on PHP 7.4
     env:
       CI: true
+      COMPOSER_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      APP_URL: ${{ secrets.APP_URL }}
+      APP_DOMAIN: ${{ secrets.APP_DOMAIN }}
+      APP_SECRET: ${{ secrets.APP_SECRET }}
+      APP_RELEASE: ${{ github.sha }}
+      # VAULT_ADDR: ${{ secrets.VAULT_ADDR }}
+      # VAULT_API_ADDR: ${{ secrets.VAULT_API_ADDR }}
+      # VAULT_ADDRESS: ${{ secrets.VAULT_ADDRESS }}
     steps:
       - uses: actions/checkout@v2
 
       # see https://github.com/shivammathur/setup-php
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
-        env:
-          COMPOSER_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          APP_URL: ${{ secrets.APP_URL }}
-          APP_DOMAIN: ${{ secrets.APP_DOMAIN }}
-          APP_SECRET: ${{ secrets.APP_SECRET }}
-          APP_RELEASE: ${{ github.sha }}
-          # VAULT_ADDR: ${{ secrets.VAULT_ADDR }}
-          # VAULT_API_ADDR: ${{ secrets.VAULT_API_ADDR }}
-          # VAULT_ADDRESS: ${{ secrets.VAULT_ADDRESS }}
         with:
           php-version: 7.4
           extensions: mbstring, bcmath # Setup any required extensions for tests
@@ -53,9 +52,9 @@ jobs:
           key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
           restore-keys: ${{ runner.os }}-php-
 
-      - name: Install dependencies
+      - name: Install dependencies production
         if: steps.composer-cache.outputs.cache-hit != 'true'
-        run: composer install --prefer-dist --no-progress --no-suggest --dev
+        run: composer install --prefer-dist --no-progress --no-suggest --no-dev
 
       - name: Compiles .env files to .env.local.php.
         run: composer symfony:dump-env prod
@@ -70,16 +69,16 @@ jobs:
         uses: actions/upload-artifact@v1
         with:
           name: build
-          path: vendor/*
+          path: vendor
 
-      # - name: Installs bundles web assets under a public directory
-      #   run: php bin/console assets:install
+      - name: Installs bundles web assets under a public directory
+        run: php bin/console assets:install
 
-      # - name: Put built assets in artifacts
-      #   uses: actions/upload-artifact@v1
-      #   with:
-      #     name: build
-      #     path: public
+      - name: Put built assets in artifacts
+        uses: actions/upload-artifact@v1
+        with:
+          name: build
+          path: public
 
 #      - name: Run Unit Tests
 #        run: ./vendor/bin/phpunit
@@ -89,30 +88,7 @@ jobs:
 #        with:
 #          name: code-coverage-report
 #          path: build/coverage/*
-#
-#  unit_tests:
-#    needs: build
-#    runs-on: ubuntu-latest
-#    name: Unit Tests
-#    steps:
-#      - uses: actions/checkout@v2
-#
-#      - name: Setup PHP
-#        uses: shivammathur/setup-php@v2
-#        env:
-#          COMPOSER_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#        with:
-#          php-version: 7.4
-#          coverage: none
-#
-#      - name: Run Unit Tests
-#        run: vendor/bin/phpunit
-#
-#      - name: Archive code coverage results
-#        uses: actions/upload-artifact@v1
-#        with:
-#          name: code-coverage-report
-#          path: build/logs/clover.xml
+
 
 #  phpstan-analysis:
 #    needs: build
@@ -131,3 +107,32 @@ jobs:
 #
 #      - name: Run PHPStan
 #        run: phpstan analyse src --error-format=checkstyle | cs2pr
+
+
+  unit_tests:
+    needs: check_composer
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php: ['7.4', '8.0']
+
+    name: PHP ${{ matrix.php }} tests
+    steps:
+      - uses: actions/checkout@v2
+      # required for "git tag" presence for monorepo-builder split and changelog-linker git tags resolver; default is 1
+      # https://github.com/actions/checkout#fetch-all-tags
+      - run: git fetch --depth=1 origin +refs/tags/*:refs/tags/*
+
+      # see https://github.com/shivammathur/setup-php
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v1
+        with:
+          php-version: ${{ matrix.php }}
+          coverage: none # disable xdebug, pcov
+          tools: phpunit
+
+      - name: Install dependencies
+        run: composer install --dev --no-progress --ignore-platform-reqs
+
+      - name: Run Unit Tests
+        run: ./vendor/bin/phpunit
