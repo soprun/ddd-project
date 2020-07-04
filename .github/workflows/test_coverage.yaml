@@ -19,13 +19,12 @@ jobs:
           coverage: pcov
           tools: phpunit
 
-      - run: composer install --no-progress
+      # - run: composer install --no-progress
 
       - run: phpunit --coverage-clover build/logs/clover.xml
 
       - run: |
-          # coveralls.io
-          wget https://github.com/php-coveralls/php-coveralls/releases/download/v2.1.0/php-coveralls.phar
+          wget https://github.com/php-coveralls/php-coveralls/releases/download/v2.2.0/php-coveralls.phar --quiet
           php php-coveralls.phar --verbose
         env:
           COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
