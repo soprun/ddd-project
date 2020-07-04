@@ -22,8 +22,19 @@ jobs:
         uses: shivammathur/setup-php@v1
         with:
           php-version: ${{ matrix.php }}
-          coverage: xdebug
+          coverage: pcov
           tools: phpunit
+
+      - name: Get composer cache directory
+        id: composercache
+        run: echo "::set-output name=dir::$(composer config cache-files-dir)"
+
+      - name: Cache dependencies
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.composercache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
 
       - name: Cache Composer packages
         id: composer-cache
@@ -42,7 +53,19 @@ jobs:
       # Docs: https://getcomposer.org/doc/articles/scripts.md
 
       - name: Run Unit Tests
-        run: phpunit
+        run: phpunit --coverage-clover build/logs/clover.xml
 
       # - name: Run check Coding Standard
       #   run: php ci/check_coding_standard_readme_sync.php
+
+      - name: Archive production artifacts
+        uses: actions/upload-artifact@v1
+        with:
+          name: dist
+          path: dist
+
+      - name: Archive code coverage results
+        uses: actions/upload-artifact@v1
+        with:
+          name: code-coverage-report
+          path: build/logs/clover.xml
