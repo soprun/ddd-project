@@ -19,7 +19,17 @@ jobs:
           coverage: pcov
           tools: phpunit
 
-      # - run: composer install --no-progress
+      - name: Cache Composer packages
+        id: composer-cache
+        uses: actions/cache@v2
+        with:
+          path: vendor
+          key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-php-
+
+      - name: Install dependencies
+        if: steps.composer-cache.outputs.cache-hit != 'true'
+        run: composer install --prefer-dist --no-progress --no-suggest
 
       - run: phpunit --coverage-clover build/logs/clover.xml
 
