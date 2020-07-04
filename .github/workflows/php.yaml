@@ -1,0 +1,48 @@
+name: Build application
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    name: PHP ${{ matrix.php-versions }} Test
+    strategy:
+      matrix:
+        php: ['7.2', '7.3', '7.4']
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Cache Composer packages
+        id: composer-cache
+        uses: actions/cache@v2
+        with:
+          path: vendor
+          key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-php-
+
+      # see https://github.com/shivammathur/setup-php
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v1
+        with:
+          php-version: ${{ matrix.php-versions }}
+          coverage: xdebug
+          tools: phpunit
+
+      - name: Install dependencies
+        if: steps.composer-cache.outputs.cache-hit != 'true'
+        run: composer install --prefer-dist --no-progress --no-suggest
+
+      # Add a test script to composer.json, for instance: "test": "vendor/bin/phpunit"
+      # Docs: https://getcomposer.org/doc/articles/scripts.md
+
+      - name: Run Unit Tests
+        run: vendor/bin/phpunit
+
+      # - name: Run check Coding Standard
+      #   run: php ci/check_coding_standard_readme_sync.php
