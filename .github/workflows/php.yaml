@@ -78,6 +78,7 @@ jobs:
   phpstan-analysis:
     runs-on: ubuntu-latest
     name: PHPStan static code analysis
+    needs: build
     strategy:
       matrix:
         php: ['7.4', '8.0']
