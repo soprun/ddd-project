@@ -48,6 +48,9 @@ jobs:
       - name: Run static code analysis
         run: phpstan analyse src --error-format=checkstyle | cs2pr
 
+      - name: Run Unit Tests
+        run: ./vendor/bin/phpunit --coverage-clover build/logs/clover.xml
+
       - name: Run coveralls
         run: php ./vendor/bin/php-coveralls --verbose
         env:
@@ -80,8 +83,7 @@ jobs:
 #          name: build
 #          path: public
 #
-#      - name: Run Unit Tests
-#        run: ./vendor/bin/phpunit
+
 #
 #      - name: Put built code coverage results in artifacts
 #        uses: actions/upload-artifact@v1
