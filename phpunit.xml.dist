@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <!-- https://phpunit.readthedocs.io/en/latest/configuration.html -->
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:noNamespaceSchemaLocation="bin/.phpunit/phpunit.xsd"
@@ -9,6 +8,13 @@
          bootstrap="tests/bootstrap.php"
          beStrictAboutOutputDuringTests="true"
          beStrictAboutTodoAnnotatedTests="true"
+         convertErrorsToExceptions="true"
+         convertNoticesToExceptions="true"
+         convertWarningsToExceptions="true"
+         processIsolation="false"
+         stopOnFailure="true"
+         executionOrder="random"
+         resolveDependencies="true"
 >
     <php>
         <ini name="error_reporting" value="-1"/>
@@ -19,8 +25,11 @@
     </php>
 
     <testsuites>
-        <testsuite name="Project Test Suite">
-            <directory>tests</directory>
+        <testsuite name="Feature">
+            <directory suffix="Test.php">./tests/Feature</directory>
+        </testsuite>
+        <testsuite name="Unit">
+            <directory suffix="Test.php">./tests/Unit</directory>
         </testsuite>
     </testsuites>
 
@@ -35,6 +44,8 @@
     </listeners>
 
     <logging>
-        <log type="coverage-clover" target="build/logs/clover.xml"/>
+        <log type="coverage-clover" target="./build/coverage/clover.xml"/>
+        <log type="coverage-xml" target="./build/coverage/coverage-xml/"/>
+        <log type="junit" target="./build/logs/coverage.junit.xml"/>
     </logging>
 </phpunit>
