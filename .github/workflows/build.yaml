@@ -47,11 +47,7 @@ jobs:
       #          name: dist
       #          path: dist
       #
-      # - name: Archive code coverage results
-      #   uses: actions/upload-artifact@v1
-      #   with:
-      #     name: code-coverage-report
-      #     path: build/logs/clover.xml
+
 
   unit_tests:
     need: build
@@ -62,6 +58,12 @@ jobs:
 
       - name: Run Unit Tests
         run: vendor/bin/phpunit
+
+      - name: Archive code coverage results
+        uses: actions/upload-artifact@v1
+        with:
+          name: code-coverage-report
+          path: build/logs/clover.xml
 
   phpstan-analysis:
     need: build
