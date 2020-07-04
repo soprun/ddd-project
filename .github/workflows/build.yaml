@@ -54,7 +54,7 @@ jobs:
 
       - name: Install dependencies production
         if: steps.composer-cache.outputs.cache-hit != 'true'
-        run: composer install --prefer-dist --no-progress --no-suggest --no-dev
+        run: composer install --prefer-dist --no-progress --no-suggest --dev
 
       - name: Compiles .env files to .env.local.php.
         run: composer symfony:dump-env prod
@@ -110,7 +110,7 @@ jobs:
 
 
   unit_tests:
-    needs: check_composer
+    # needs: check_composer
     runs-on: ubuntu-latest
     strategy:
       matrix:
