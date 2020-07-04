@@ -9,7 +9,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    name: PHP ${{ matrix.php-versions }} Test
+    name: PHP ${{ matrix.php }} Test
     strategy:
       matrix:
         php: ['7.2', '7.3', '7.4']
