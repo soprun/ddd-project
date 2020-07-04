@@ -23,6 +23,8 @@ jobs:
     needs: check_composer
     runs-on: ubuntu-latest
     name: Building applications on PHP 7.4
+    env:
+      CI: true
     steps:
       - uses: actions/checkout@v2
 
@@ -33,8 +35,8 @@ jobs:
           COMPOSER_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           php-version: 7.4
-          coverage: xdebug # disable xdebug, pcov
-          tools: phpunit
+          extensions: mbstring, bcmath # Setup any required extensions for tests
+          coverage: none # disable xdebug, pcov
 
       - name: Cache Composer packages
         id: composer-cache
@@ -50,6 +52,15 @@ jobs:
 
       - name: Compiles .env files to .env.local.php.
         run: composer symfony:dump-env prod
+        env:
+          APP_URL: ${{ secrets.APP_URL }}
+          APP_DOMAIN: ${{ secrets.APP_DOMAIN }}
+          APP_SECRET: ${{ secrets.APP_SECRET }}
+          APP_RELEASE: ${{ github.sha }}
+
+          # VAULT_ADDR: ${{ secrets.VAULT_ADDR }}
+          # VAULT_API_ADDR: ${{ secrets.VAULT_API_ADDR }}
+          # VAULT_ADDRESS: ${{ secrets.VAULT_ADDRESS }}
 
       - name: Archive build artifacts
         uses: actions/upload-artifact@v1
@@ -67,7 +78,7 @@ jobs:
       #     path: public
 
       - name: Run Unit Tests
-        run: phpunit
+        run: ./vendor/bin/phpunit
 
       - name: Put built code coverage results in artifacts
         uses: actions/upload-artifact@v1
