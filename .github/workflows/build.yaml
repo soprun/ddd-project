@@ -20,7 +20,7 @@ jobs:
           COMPOSER_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           php-version: 7.4
-          coverage: none # disable xdebug, pcov
+          coverage: xdebug # disable xdebug, pcov
           tools: phpunit
 
       - name: Check that platform requirements are satisfied.
