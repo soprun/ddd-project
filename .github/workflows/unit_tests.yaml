@@ -25,10 +25,11 @@ jobs:
         uses: shivammathur/setup-php@v1
         with:
           php-version: ${{ matrix.php }}
-          coverage: none
+          coverage: none # disable xdebug, pcov
+          tools: phpunit
 
       - name: Install dependencies
         run: composer install --no-progress
 
       - name: Run Unit Tests
-        run: vendor/bin/phpunit
+        run: phpunit

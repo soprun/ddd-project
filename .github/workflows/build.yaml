@@ -7,7 +7,20 @@ on:
     branches: [ master ]
 
 jobs:
+  check_composer:
+    runs-on: ubuntu-latest
+    name: Check Composer
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Check that platform requirements are satisfied.
+        run: composer check-platform-reqs
+
+      - name: Validates a composer.json and composer.lock.
+        run: composer validate
+
   build:
+    needs: check_composer
     runs-on: ubuntu-latest
     name: Building applications on PHP 7.4
     steps:
@@ -22,12 +35,6 @@ jobs:
           php-version: 7.4
           coverage: xdebug # disable xdebug, pcov
           tools: phpunit
-
-      - name: Check that platform requirements are satisfied.
-        run: composer check-platform-reqs
-
-      - name: Validates a composer.json and composer.lock.
-        run: composer validate
 
       - name: Cache Composer packages
         id: composer-cache
