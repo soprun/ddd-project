@@ -50,7 +50,7 @@ jobs:
 
       - name: Compiles .env files to .env.local.php.
         run: composer symfony:dump-env prod
-        with:
+        env:
           APP_URL: ${{ secrets.APP_URL }}
           APP_DOMAIN: ${{ secrets.APP_DOMAIN }}
           APP_SECRET: ${{ secrets.APP_SECRET }}
