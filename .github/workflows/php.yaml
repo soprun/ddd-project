@@ -12,7 +12,7 @@ jobs:
     name: PHP ${{ matrix.php }} Test
     strategy:
       matrix:
-        php: ['7.2', '7.3', '7.4']
+        php: ['7.4']
 
     steps:
       - uses: actions/checkout@v2
@@ -42,7 +42,7 @@ jobs:
       # Docs: https://getcomposer.org/doc/articles/scripts.md
 
       - name: Run Unit Tests
-        run: vendor/bin/phpunit
+        run: phpunit
 
       # - name: Run check Coding Standard
       #   run: php ci/check_coding_standard_readme_sync.php
