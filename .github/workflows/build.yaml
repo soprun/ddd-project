@@ -50,7 +50,7 @@ jobs:
 
 
   unit_tests:
-    need: build
+    needs: build
     runs-on: ubuntu-latest
     name: Unit Tests
     steps:
@@ -66,7 +66,7 @@ jobs:
           path: build/logs/clover.xml
 
   phpstan-analysis:
-    need: build
+    needs: build
     runs-on: ubuntu-latest
     name: PHPStan static code analysis
     steps:
