@@ -116,7 +116,7 @@ jobs:
       matrix:
         php: ['7.4', '8.0']
 
-    name: PHP ${{ matrix.php }} tests
+    name: Unit Tests on PHP ${{ matrix.php }}
     steps:
       - uses: actions/checkout@v2
       # required for "git tag" presence for monorepo-builder split and changelog-linker git tags resolver; default is 1
@@ -135,4 +135,7 @@ jobs:
         run: composer install --dev --no-progress --ignore-platform-reqs
 
       - name: Run Unit Tests
-        run: ./vendor/bin/phpunit
+        run: ./vendor/bin/phpunit --no-logging --group Unit
+
+      - name: Run Unit Tests
+        run: ./vendor/bin/phpunit --no-logging --group Feature
