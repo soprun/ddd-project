@@ -20,7 +20,8 @@ jobs:
           COMPOSER_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           php-version: 7.4
-          coverage: none
+          coverage: none # disable xdebug, pcov
+          tools: phpunit
 
       - name: Cache Composer packages
         id: composer-cache
@@ -35,16 +36,22 @@ jobs:
         run: composer install --prefer-dist --no-progress --no-suggest
 
       - name: Run Unit Tests
-        run: vendor/bin/phpunit
+        run: phpunit --coverage-clover build/logs/clover.xml
 
       # Add a test script to composer.json, for instance: "test": "vendor/bin/phpunit"
       # Docs: https://getcomposer.org/doc/articles/scripts.md
 
-      - name: Archive production artifacts
+#      - name: Archive production artifacts
+#        uses: actions/upload-artifact@v1
+#        with:
+#          name: dist
+#          path: dist
+
+      - name: Archive code coverage results
         uses: actions/upload-artifact@v1
         with:
-          name: dist
-          path: dist
+          name: code-coverage-report
+          path: build/logs/clover.xml
 #
 #  unit_tests:
 #    needs: build
