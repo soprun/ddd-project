@@ -11,16 +11,6 @@ jobs:
     # needs: unit_tests
     runs-on: ubuntu-latest
     name: Building applications
-    env:
-      CI: true
-      COMPOSER_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      APP_URL: ${{ secrets.APP_URL }}
-      APP_DOMAIN: ${{ secrets.APP_DOMAIN }}
-      APP_SECRET: ${{ secrets.APP_SECRET }}
-      APP_RELEASE: ${{ github.sha }}
-      # VAULT_ADDR: ${{ secrets.VAULT_ADDR }}
-      # VAULT_API_ADDR: ${{ secrets.VAULT_API_ADDR }}
-      # VAULT_ADDRESS: ${{ secrets.VAULT_ADDRESS }}
     steps:
       - uses: actions/checkout@v2
 
@@ -30,8 +20,21 @@ jobs:
         with:
           php-version: 7.4
           extensions: mbstring, bcmath # Setup any required extensions for tests
-          coverage: none # disable xdebug, pcov
+          coverage: pcov # disable xdebug, pcov
           tools: cs2pr, phpstan
+      env:
+        CI: true
+        COMPOSER_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        APP_URL: ${{ secrets.APP_URL }}
+        APP_DOMAIN: ${{ secrets.APP_DOMAIN }}
+        APP_SECRET: ${{ secrets.APP_SECRET }}
+        APP_RELEASE: ${{ github.sha }}
+        # VAULT_ADDR: ${{ secrets.VAULT_ADDR }}
+        # VAULT_API_ADDR: ${{ secrets.VAULT_API_ADDR }}
+        # VAULT_ADDRESS: ${{ secrets.VAULT_ADDRESS }}
+
+      - name: Run static code analysis
+        run: phpstan analyse src --error-format=checkstyle | cs2pr
 
       - name: Cache Composer packages
         id: composer-cache
@@ -43,10 +46,12 @@ jobs:
 
       - name: Install dependencies production
         if: steps.composer-cache.outputs.cache-hit != 'true'
-        run: composer install --prefer-dist --no-progress --no-suggest --dev
+        run: composer install --prefer-dist --no-progress --no-suggest --dev --no-interaction
 
-      - name: Run static code analysis
-        run: phpstan analyse src --error-format=checkstyle | cs2pr
+      - name: Run coveralls
+        run: php ./vendor/bin/php-coveralls --verbose
+        env:
+          COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
 
 #      - name: Compiles .env files to .env.local.php.
 #        run: composer symfony:dump-env prod
@@ -114,7 +119,6 @@ jobs:
         with:
           php-version: ${{ matrix.php }}
           coverage: none # disable xdebug, pcov
-          tools: phpunit
 
       - name: Install dependencies
         run: composer install --dev --no-progress --ignore-platform-reqs
