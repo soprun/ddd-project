@@ -1,4 +1,6 @@
 {
+    "name": "soprun/ddd-project",
+    "description": "Symfony DDD backend boilerplate.",
     "type": "project",
     "license": "proprietary",
     "require": {
