@@ -30,6 +30,8 @@ jobs:
           extensions: mbstring, bcmath # Setup any required extensions for tests
           coverage: pcov # disable xdebug, pcov
           tools: cs2pr, phpstan
+        env:
+          update: true
 
       - name: Cache Composer packages
         id: composer-cache
