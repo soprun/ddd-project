@@ -7,22 +7,10 @@ on:
     branches: [ master ]
 
 jobs:
-  check_composer:
-    runs-on: ubuntu-latest
-    name: Check Composer
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: Check that platform requirements are satisfied.
-        run: composer check-platform-reqs
-
-      - name: Validates a composer.json and composer.lock.
-        run: composer validate
-
   build:
     # needs: unit_tests
     runs-on: ubuntu-latest
-    name: Building applications on PHP 7.4
+    name: Building applications
     env:
       CI: true
       COMPOSER_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -90,24 +78,34 @@ jobs:
 #          path: build/coverage/*
 
 
-#  phpstan-analysis:
-#    needs: build
-#    runs-on: ubuntu-latest
-#    name: PHPStan static code analysis
-#    steps:
-#      - uses: actions/checkout@v2
-#
-#      # see https://github.com/shivammathur/setup-php
-#      - name: Setup PHP
-#        uses: shivammathur/setup-php@v2
-#        with:
-#          php-version: 7.4
-#          coverage: none # disable xdebug, pcov
-#          tools: cs2pr, phpstan
-#
-#      - name: Run PHPStan
-#        run: phpstan analyse src --error-format=checkstyle | cs2pr
+  phpstan-analysis:
+    runs-on: ubuntu-latest
+    name: PHPStan static code analysis
+    steps:
+      - uses: actions/checkout@v2
 
+      # see https://github.com/shivammathur/setup-php
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 7.4
+          coverage: none # disable xdebug, pcov
+          tools: cs2pr, phpstan
+
+      - name: Run PHPStan
+        run: phpstan analyse src --error-format=checkstyle | cs2pr
+
+  check_composer:
+    runs-on: ubuntu-latest
+    name: Check Composer
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Check that platform requirements are satisfied.
+        run: composer check-platform-reqs
+
+      - name: Validates a composer.json and composer.lock.
+        run: composer validate
 
   unit_tests:
     # needs: check_composer
