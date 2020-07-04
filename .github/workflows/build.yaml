@@ -33,6 +33,9 @@ jobs:
         if: steps.composer-cache.outputs.cache-hit != 'true'
         run: composer install --prefer-dist --no-progress --no-suggest
 
+      - name: Run Unit Tests
+        run: vendor/bin/phpunit
+
       # Add a test script to composer.json, for instance: "test": "vendor/bin/phpunit"
       # Docs: https://getcomposer.org/doc/articles/scripts.md
       #
@@ -49,36 +52,36 @@ jobs:
       #
 
 
-  unit_tests:
-    needs: build
-    runs-on: ubuntu-latest
-    name: Unit Tests
-    steps:
-      - uses: actions/checkout@v2
+#  unit_tests:
+#    needs: build
+#    runs-on: ubuntu-latest
+#    name: Unit Tests
+#    steps:
+#      - uses: actions/checkout@v2
+#
+#      - name: Run Unit Tests
+#        run: vendor/bin/phpunit
+#
+#      - name: Archive code coverage results
+#        uses: actions/upload-artifact@v1
+#        with:
+#          name: code-coverage-report
+#          path: build/logs/clover.xml
 
-      - name: Run Unit Tests
-        run: vendor/bin/phpunit
-
-      - name: Archive code coverage results
-        uses: actions/upload-artifact@v1
-        with:
-          name: code-coverage-report
-          path: build/logs/clover.xml
-
-  phpstan-analysis:
-    needs: build
-    runs-on: ubuntu-latest
-    name: PHPStan static code analysis
-    steps:
-      - uses: actions/checkout@v2
-
-      # see https://github.com/shivammathur/setup-php
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: 7.4
-          coverage: none # disable xdebug, pcov
-          tools: cs2pr, phpstan
-
-      - name: Run PHPStan
-        run: phpstan analyse src --error-format=checkstyle | cs2pr
+#  phpstan-analysis:
+#    needs: build
+#    runs-on: ubuntu-latest
+#    name: PHPStan static code analysis
+#    steps:
+#      - uses: actions/checkout@v2
+#
+#      # see https://github.com/shivammathur/setup-php
+#      - name: Setup PHP
+#        uses: shivammathur/setup-php@v2
+#        with:
+#          php-version: 7.4
+#          coverage: none # disable xdebug, pcov
+#          tools: cs2pr, phpstan
+#
+#      - name: Run PHPStan
+#        run: phpstan analyse src --error-format=checkstyle | cs2pr
