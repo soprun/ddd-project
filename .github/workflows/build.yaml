@@ -6,6 +6,12 @@ on:
   pull_request:
     branches: [ master ]
 
+env:
+  APP_URL: ${{ secrets.APP_URL }}
+  APP_DOMAIN: ${{ secrets.APP_DOMAIN }}
+  APP_SECRET: ${{ secrets.APP_SECRET }}
+  APP_RELEASE: ${{ github.sha }}
+
 jobs:
   build:
     # needs: unit_tests
@@ -24,11 +30,6 @@ jobs:
           extensions: mbstring, bcmath # Setup any required extensions for tests
           coverage: pcov # disable xdebug, pcov
           tools: cs2pr, phpstan
-        env:
-          APP_URL: ${{ secrets.APP_URL }}
-          APP_DOMAIN: ${{ secrets.APP_DOMAIN }}
-          APP_SECRET: ${{ secrets.APP_SECRET }}
-          APP_RELEASE: ${{ github.sha }}
 
       - name: Cache Composer packages
         id: composer-cache
