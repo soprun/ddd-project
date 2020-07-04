@@ -53,6 +53,9 @@ jobs:
         env:
           COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
 
+      - name: Run coveralls
+        run: php bin/console debug:container --env-vars --show-hidden
+
 #      - name: Compiles .env files to .env.local.php.
 #        run: composer symfony:dump-env prod
 #
