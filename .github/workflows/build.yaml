@@ -22,16 +22,16 @@ jobs:
           extensions: mbstring, bcmath # Setup any required extensions for tests
           coverage: pcov # disable xdebug, pcov
           tools: cs2pr, phpstan
-      env:
-        CI: true
-        COMPOSER_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        APP_URL: ${{ secrets.APP_URL }}
-        APP_DOMAIN: ${{ secrets.APP_DOMAIN }}
-        APP_SECRET: ${{ secrets.APP_SECRET }}
-        APP_RELEASE: ${{ github.sha }}
-        # VAULT_ADDR: ${{ secrets.VAULT_ADDR }}
-        # VAULT_API_ADDR: ${{ secrets.VAULT_API_ADDR }}
-        # VAULT_ADDRESS: ${{ secrets.VAULT_ADDRESS }}
+        env:
+          CI: true
+          COMPOSER_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          APP_URL: ${{ secrets.APP_URL }}
+          APP_DOMAIN: ${{ secrets.APP_DOMAIN }}
+          APP_SECRET: ${{ secrets.APP_SECRET }}
+          APP_RELEASE: ${{ github.sha }}
+          # VAULT_ADDR: ${{ secrets.VAULT_ADDR }}
+          # VAULT_API_ADDR: ${{ secrets.VAULT_API_ADDR }}
+          # VAULT_ADDRESS: ${{ secrets.VAULT_ADDRESS }}
 
       - name: Run static code analysis
         run: phpstan analyse src --error-format=checkstyle | cs2pr
