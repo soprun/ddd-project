@@ -33,9 +33,6 @@ jobs:
           # VAULT_API_ADDR: ${{ secrets.VAULT_API_ADDR }}
           # VAULT_ADDRESS: ${{ secrets.VAULT_ADDRESS }}
 
-      - name: Run static code analysis
-        run: phpstan analyse src --error-format=checkstyle | cs2pr
-
       - name: Cache Composer packages
         id: composer-cache
         uses: actions/cache@v2
@@ -47,6 +44,9 @@ jobs:
       - name: Install dependencies production
         if: steps.composer-cache.outputs.cache-hit != 'true'
         run: composer install --prefer-dist --no-progress --no-suggest --dev --no-interaction
+
+      - name: Run static code analysis
+        run: phpstan analyse src --error-format=checkstyle | cs2pr
 
       - name: Run coveralls
         run: php ./vendor/bin/php-coveralls --verbose
