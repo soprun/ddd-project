@@ -12,7 +12,7 @@ jobs:
     name: PHP ${{ matrix.php }} Test
     strategy:
       matrix:
-        php: ['7.4', '7.8']
+        php: ['7.4', '8.0']
 
     steps:
       - uses: actions/checkout@v2
@@ -36,14 +36,14 @@ jobs:
           key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
           restore-keys: ${{ runner.os }}-composer-
 
-#      - name: Cache Composer packages
-#        id: composer-cache
-#        uses: actions/cache@v2
-#        with:
-#          path: vendor
-#          key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
-#          restore-keys: |
-#            ${{ runner.os }}-php-
+      - name: Cache Composer packages
+        id: composer-cache
+        uses: actions/cache@v2
+        with:
+          path: vendor
+          key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-php-
 
       - name: Install dependencies
         if: steps.composer-cache.outputs.cache-hit != 'true'
@@ -58,11 +58,11 @@ jobs:
       # - name: Run check Coding Standard
       #   run: php ci/check_coding_standard_readme_sync.php
 
-      - name: Archive production artifacts
-        uses: actions/upload-artifact@v1
-        with:
-          name: dist
-          path: dist
+      #      - name: Archive production artifacts
+      #        uses: actions/upload-artifact@v1
+      #        with:
+      #          name: dist
+      #          path: dist
 
       - name: Archive code coverage results
         uses: actions/upload-artifact@v1
