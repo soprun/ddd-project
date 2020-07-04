@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        php: ['7.3', '7.4']
+        php: ['7.2', '7.3', '7.4', '8.0']
 
     name: PHP ${{ matrix.php }} tests
     steps:
@@ -29,7 +29,7 @@ jobs:
           tools: phpunit
 
       - name: Install dependencies
-        run: composer install --no-progress --ignore-platform-reqs
+        run: composer install --dev --no-progress --ignore-platform-reqs
 
       - name: Run Unit Tests
         run: phpunit
