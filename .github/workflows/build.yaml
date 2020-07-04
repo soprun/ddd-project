@@ -13,9 +13,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Check that platform requirements are satisfied.
-        run: composer check-platform-reqs
-
       # see https://github.com/shivammathur/setup-php
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -23,8 +20,14 @@ jobs:
           COMPOSER_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           php-version: 7.4
-          coverage: pcov # disable xdebug, pcov
+          coverage: none # disable xdebug, pcov
           tools: phpunit
+
+      - name: Check that platform requirements are satisfied.
+        run: composer check-platform-reqs
+
+      - name: Validates a composer.json and composer.lock.
+        run: composer validate
 
       - name: Cache Composer packages
         id: composer-cache
@@ -38,10 +41,28 @@ jobs:
         if: steps.composer-cache.outputs.cache-hit != 'true'
         run: composer install --prefer-dist --no-progress --no-suggest
 
+      - name: Compiles .env files to .env.local.php.
+        run: composer symfony:dump-env prod
+
+      - name: Archive build artifacts
+        uses: actions/upload-artifact@v1
+        with:
+          name: build
+          path: .env.local.php
+
+      - name: Installs bundles web assets under a public directory
+        run: php bin/console assets:install
+
+      - name: Put built assets in artifacts
+        uses: actions/upload-artifact@v1
+        with:
+          name: build
+          path: public
+
       - name: Run Unit Tests
         run: phpunit
 
-      - name: Archive code coverage results
+      - name: Put built code coverage results in artifacts
         uses: actions/upload-artifact@v1
         with:
           name: code-coverage-report
