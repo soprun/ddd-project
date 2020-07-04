@@ -8,12 +8,8 @@ on:
 
 jobs:
   build:
-    needs: phpstan-analysis
     runs-on: ubuntu-latest
-    name: PHP ${{ matrix.php }} Test
-    strategy:
-      matrix:
-        php: ['7.4', '8.0']
+    name: Build application on PHP 7.4
     steps:
       - uses: actions/checkout@v2
 
@@ -23,21 +19,7 @@ jobs:
         env:
           COMPOSER_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          php-version: ${{ matrix.php }}
-          extensions: mbstring
-          coverage: pcov
-          tools: php-cs-fixer, phpunit, cs2pr, phpstan
-
-      - name: Get composer cache directory
-        id: composercache
-        run: echo "::set-output name=dir::$(composer config cache-files-dir)"
-
-      - name: Cache dependencies
-        uses: actions/cache@v2
-        with:
-          path: ${{ steps.composercache.outputs.dir }}
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
-          restore-keys: ${{ runner.os }}-composer-
+          php-version: 7.4
 
       - name: Cache Composer packages
         id: composer-cache
