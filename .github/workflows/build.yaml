@@ -11,6 +11,8 @@ jobs:
     # needs: unit_tests
     runs-on: ubuntu-latest
     name: Building applications
+    env:
+      CI: true
     steps:
       - uses: actions/checkout@v2
 
@@ -22,16 +24,6 @@ jobs:
           extensions: mbstring, bcmath # Setup any required extensions for tests
           coverage: pcov # disable xdebug, pcov
           tools: cs2pr, phpstan
-        env:
-          CI: true
-          COMPOSER_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          APP_URL: ${{ secrets.APP_URL }}
-          APP_DOMAIN: ${{ secrets.APP_DOMAIN }}
-          APP_SECRET: ${{ secrets.APP_SECRET }}
-          APP_RELEASE: ${{ github.sha }}
-          # VAULT_ADDR: ${{ secrets.VAULT_ADDR }}
-          # VAULT_API_ADDR: ${{ secrets.VAULT_API_ADDR }}
-          # VAULT_ADDRESS: ${{ secrets.VAULT_ADDRESS }}
 
       - name: Cache Composer packages
         id: composer-cache
@@ -41,7 +33,7 @@ jobs:
           key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
           restore-keys: ${{ runner.os }}-php-
 
-      - name: Install dependencies production
+      - name: Install dependencies
         if: steps.composer-cache.outputs.cache-hit != 'true'
         run: composer install --prefer-dist --no-progress --no-suggest --dev --no-interaction
 
@@ -51,46 +43,26 @@ jobs:
       - name: Run Unit Tests
         run: ./vendor/bin/phpunit --coverage-clover build/logs/clover.xml
 
-      - name: Run coveralls
+      - name: Run PHP Coveralls
         run: php ./vendor/bin/php-coveralls --verbose
         env:
           COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
 
-      - name: Run coveralls
-        run: php bin/console debug:container --env-vars --show-hidden
+      - name: Compiles .env files to .env.local.php.
+        run: composer symfony:dump-env prod
+        env:
+          APP_URL: ${{ secrets.APP_URL }}
+          APP_DOMAIN: ${{ secrets.APP_DOMAIN }}
+          APP_SECRET: ${{ secrets.APP_SECRET }}
+          APP_RELEASE: ${{ github.sha }}
 
-#      - name: Compiles .env files to .env.local.php.
-#        run: composer symfony:dump-env prod
-#
-#      - name: Put built env vars in artifacts
-#        uses: actions/upload-artifact@v1
-#        with:
-#          name: build
-#          path: .env.local.php
+      - name: Put built env vars in artifacts
+        uses: actions/upload-artifact@v1
+        with:
+          name: build
+          path: .env.local.php
 
-#      - name: Archive vendor artifacts
-#        uses: actions/upload-artifact@v1
-#        with:
-#          name: build
-#          path: vendor
-#
-#      - name: Installs bundles web assets under a public directory
-#        run: php bin/console assets:install
-#
-#      - name: Put built assets in artifacts
-#        uses: actions/upload-artifact@v1
-#        with:
-#          name: build
-#          path: public
-#
-
-#
-#      - name: Put built code coverage results in artifacts
-#        uses: actions/upload-artifact@v1
-#        with:
-#          name: code-coverage-report
-#          path: build/coverage/*
-
+      - run: cat .env.local.php
 
   check_composer:
     runs-on: ubuntu-latest
@@ -104,32 +76,32 @@ jobs:
       - name: Validates a composer.json and composer.lock.
         run: composer validate
 
-  unit_tests:
-    # needs: check_composer
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        php: ['7.4', '8.0']
-
-    name: Unit Tests on PHP ${{ matrix.php }}
-    steps:
-      - uses: actions/checkout@v2
-      # required for "git tag" presence for monorepo-builder split and changelog-linker git tags resolver; default is 1
-      # https://github.com/actions/checkout#fetch-all-tags
-      - run: git fetch --depth=1 origin +refs/tags/*:refs/tags/*
-
-      # see https://github.com/shivammathur/setup-php
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v1
-        with:
-          php-version: ${{ matrix.php }}
-          coverage: none # disable xdebug, pcov
-
-      - name: Install dependencies
-        run: composer install --dev --no-progress --ignore-platform-reqs
-
-      - name: Run Unit Tests - Unit
-        run: ./vendor/bin/phpunit --no-logging --group Unit
-
-      - name: Run Unit Tests - Feature
-        run: ./vendor/bin/phpunit --no-logging --group Feature
+#  unit_tests:
+#    # needs: check_composer
+#    runs-on: ubuntu-latest
+#    strategy:
+#      matrix:
+#        php: ['7.4', '8.0']
+#
+#    name: Unit Tests on PHP ${{ matrix.php }}
+#    steps:
+#      - uses: actions/checkout@v2
+#      # required for "git tag" presence for monorepo-builder split and changelog-linker git tags resolver; default is 1
+#      # https://github.com/actions/checkout#fetch-all-tags
+#      - run: git fetch --depth=1 origin +refs/tags/*:refs/tags/*
+#
+#      # see https://github.com/shivammathur/setup-php
+#      - name: Setup PHP
+#        uses: shivammathur/setup-php@v1
+#        with:
+#          php-version: ${{ matrix.php }}
+#          coverage: none # disable xdebug, pcov
+#
+#      - name: Install dependencies
+#        run: composer install --dev --no-progress --ignore-platform-reqs
+#
+#      - name: Run Unit Tests - Unit
+#        run: ./vendor/bin/phpunit --no-logging --group Unit
+#
+#      - name: Run Unit Tests - Feature
+#        run: ./vendor/bin/phpunit --no-logging --group Feature
