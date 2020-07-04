@@ -13,7 +13,6 @@ jobs:
     strategy:
       matrix:
         php: ['7.4', '8.0']
-
     steps:
       - uses: actions/checkout@v2
 
@@ -52,9 +51,6 @@ jobs:
         if: steps.composer-cache.outputs.cache-hit != 'true'
         run: composer install --prefer-dist --no-progress --no-suggest
 
-      - name: PHPStan
-        run: phpstan analyse src --error-format=checkstyle | cs2pr
-
       - name: Setup problem matchers for PHPUnit
         run: echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
 
@@ -78,3 +74,49 @@ jobs:
       #   with:
       #     name: code-coverage-report
       #     path: build/logs/clover.xml
+
+  phpstan-analysis:
+    runs-on: ubuntu-latest
+    name: PHPStan static code analysis
+    strategy:
+      matrix:
+        php: ['7.4', '8.0']
+    steps:
+      - uses: actions/checkout@v2s
+
+      # see https://github.com/shivammathur/setup-php
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        env:
+          COMPOSER_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          php-version: ${{ matrix.php }}
+          coverage: none # disable xdebug, pcov
+          tools: cs2pr, phpstan
+
+      - name: Get composer cache directory
+        id: composercache
+        run: echo "::set-output name=dir::$(composer config cache-files-dir)"
+
+      - name: Cache dependencies
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.composercache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      - name: Cache Composer packages
+        id: composer-cache
+        uses: actions/cache@v2
+        with:
+          path: vendor
+          key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-php-
+
+      - name: Install dependencies
+        if: steps.composer-cache.outputs.cache-hit != 'true'
+        run: composer install --prefer-dist --no-progress --no-suggest
+
+      - name: Run PHPStan
+        run: phpstan analyse src --error-format=checkstyle | cs2pr
