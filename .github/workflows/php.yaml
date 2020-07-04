@@ -17,6 +17,14 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      # see https://github.com/shivammathur/setup-php
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v1
+        with:
+          php-version: ${{ matrix.php }}
+          coverage: xdebug
+          tools: phpunit
+
       - name: Cache Composer packages
         id: composer-cache
         uses: actions/cache@v2
@@ -25,14 +33,6 @@ jobs:
           key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
           restore-keys: |
             ${{ runner.os }}-php-
-
-      # see https://github.com/shivammathur/setup-php
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v1
-        with:
-          php-version: ${{ matrix.php-versions }}
-          coverage: xdebug
-          tools: phpunit
 
       - name: Install dependencies
         if: steps.composer-cache.outputs.cache-hit != 'true'
