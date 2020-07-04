@@ -19,11 +19,14 @@ jobs:
 
       # see https://github.com/shivammathur/setup-php
       - name: Setup PHP
-        uses: shivammathur/setup-php@v1
+        uses: shivammathur/setup-php@v2
+        env:
+          COMPOSER_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           php-version: ${{ matrix.php }}
+          extensions: mbstring
           coverage: pcov
-          tools: phpunit
+          tools: php-cs-fixer, phpunit, cs2pr, phpstan
 
       - name: Get composer cache directory
         id: composercache
@@ -49,23 +52,29 @@ jobs:
         if: steps.composer-cache.outputs.cache-hit != 'true'
         run: composer install --prefer-dist --no-progress --no-suggest
 
+      - name: PHPStan
+        run: phpstan analyse src --error-format=checkstyle | cs2pr
+
+      - name: Setup problem matchers for PHPUnit
+        run: echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
+
       # Add a test script to composer.json, for instance: "test": "vendor/bin/phpunit"
       # Docs: https://getcomposer.org/doc/articles/scripts.md
-
-      - name: Run Unit Tests
-        run: phpunit --coverage-clover build/logs/clover.xml
-
+      #
+      # - name: Run Unit Tests
+      #   run: phpunit
+      #
       # - name: Run check Coding Standard
       #   run: php ci/check_coding_standard_readme_sync.php
-
+      #
       #      - name: Archive production artifacts
       #        uses: actions/upload-artifact@v1
       #        with:
       #          name: dist
       #          path: dist
-
-      - name: Archive code coverage results
-        uses: actions/upload-artifact@v1
-        with:
-          name: code-coverage-report
-          path: build/logs/clover.xml
+      #
+      # - name: Archive code coverage results
+      #   uses: actions/upload-artifact@v1
+      #   with:
+      #     name: code-coverage-report
+      #     path: build/logs/clover.xml
