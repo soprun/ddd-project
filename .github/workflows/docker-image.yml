@@ -19,7 +19,7 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
           tag_with_ref: true
           tag_with_sha: true
-          repository: soprun/ddd-project/php
+          repository: soprun/ddd-project-app
           tags: latest
           dockerfile: ./docker/app/Dockerfile
 
