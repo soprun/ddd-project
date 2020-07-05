@@ -80,7 +80,7 @@ jobs:
 
   coding-standard:
     runs-on: ubuntu-latest
-    name: Coding standard
+    name: Check Coding Standard
     steps:
       - uses: actions/checkout@v2
 
