@@ -16,7 +16,7 @@ jobs:
   build:
     # needs: coding-standard
     runs-on: ubuntu-latest
-    name: Building applications
+    name: Build applications
     env:
       CI: true
     steps:
