@@ -59,7 +59,7 @@ jobs:
 
       # TODO: Move to Docker global dependencies.
       - name: Run PHP Coveralls
-        run: php-coveralls --verbose
+        run: php vendor/bin/php-coveralls --verbose
         env:
           COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
 
