@@ -53,7 +53,7 @@ jobs:
         run: phpstan analyse src --error-format=checkstyle | cs2pr
 
       - name: Run Unit Tests
-        run: php bin/phpunit --no-logging --coverage-clover build/logs/clover.xml
+        run: php bin/phpunit --coverage-clover build/logs/clover.xml
 
       # TODO: Move to Docker global dependencies.
       - name: Run PHP Coveralls

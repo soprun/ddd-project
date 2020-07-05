@@ -40,9 +40,9 @@
         <listener class="Symfony\Bridge\PhpUnit\SymfonyTestsListener"/>
     </listeners>
 
-    <logging>
-        <log type="coverage-clover" target="./build/coverage/clover.xml"/>
-        <log type="coverage-xml" target="./build/coverage/coverage-xml/"/>
-        <log type="junit" target="./build/logs/coverage.junit.xml"/>
-    </logging>
+    <!--<logging>-->
+        <!--<log type="coverage-clover" target="./build/logs/clover.xml"/>-->
+        <!--<log type="coverage-xml" target="./build/logs/coverage-xml/"/>-->
+        <!--<log type="junit" target="./build/logs/coverage.junit.xml"/>-->
+    <!--</logging>-->
 </phpunit>
