@@ -24,3 +24,4 @@ jobs:
           tag_with_sha: true
           repository: soprun/ddd-project
           tags: latest
+          dockerfile: ./docker/app/Dockerfile
