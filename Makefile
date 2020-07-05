@@ -112,3 +112,10 @@ code-sniffer-fix: ## fix
 
 composer-update:
 	@docker-compose exec app composer update
+
+
+docker-up:
+	@docker-compose up --build --detach
+
+docker-up-force:
+	@docker-compose up --build --detach --force-recreate --remove-orphans
