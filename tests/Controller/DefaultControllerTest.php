@@ -3,9 +3,9 @@ declare(strict_types=1);
 
 namespace App\Tests\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use App\Tests\TestCase;
 
-class DefaultControllerTest extends WebTestCase
+class DefaultControllerTest extends TestCase
 {
     public function testIndex(): void
     {
@@ -14,9 +14,20 @@ class DefaultControllerTest extends WebTestCase
         # 2. Use Symfony's bridge: composer require --dev phpunit
 
         $client = static::createClient();
-
         $client->request('GET', '/');
 
-        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $this->assertTrue($client->getResponse()->isSuccessful());
+    }
+
+    public function testNotFound(): void
+    {
+        # * Instead:
+        # 1. Remove it now: composer remove --dev phpunit/phpunit
+        # 2. Use Symfony's bridge: composer require --dev phpunit/phpunit
+
+        $client = static::createClient();
+        $client->request('GET', '/not-found');
+
+        $this->assertFalse($client->getResponse()->isSuccessful());
     }
 }

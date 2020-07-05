@@ -30,9 +30,11 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: 7.4
-          extensions: mbstring, bcmath # Setup any required extensions for tests
+          extensions: mbstring, xml, ctype, iconv, intl, pdo_sqlite, dom, filter, gd, iconv, json, mbstring, pdo, intl
           coverage: xdebug # disable xdebug, pcov
           tools: cs2pr, phpstan
+        env:
+          update: true
 
       - name: Cache Composer packages
         id: composer-cache
@@ -45,6 +47,9 @@ jobs:
       - name: Install dependencies
         if: steps.composer-cache.outputs.cache-hit != 'true'
         run: composer install --prefer-dist --no-progress --no-suggest --dev --no-interaction
+
+      - name: Check Symfony requirements
+        run: php vendor/bin/requirements-checker
 
       - name: Run static code analysis
         run: phpstan analyse src --error-format=checkstyle | cs2pr
