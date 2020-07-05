@@ -77,3 +77,17 @@ jobs:
 
       - name: Validates a composer.json and composer.lock.
         run: composer validate
+
+  coding-standard:
+    runs-on: ubuntu-latest
+    name: Coding standard
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install dependencies
+        if: steps.composer-cache.outputs.cache-hit != 'true'
+        run: composer install --prefer-dist --no-progress --no-suggest
+
+      - name: Check Coding Standard
+        run: docker-compose exec app php vendor/bin/ecs check --xdebug --no-interaction
+
