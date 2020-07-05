@@ -48,6 +48,9 @@ jobs:
       - name: Run about
         run: php bin/console about
 
+      - name: Run env-vars
+        run: php bin/console debug:container --env-vars --show-hidden
+
       - name: Run static code analysis
         run: phpstan analyse src --error-format=checkstyle | cs2pr
 
