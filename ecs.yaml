@@ -1,0 +1,15 @@
+parameters:
+  paths:
+    - 'bin'
+    - 'config'
+    - 'public'
+    - 'src'
+    - 'tests'
+
+  sets:
+    - 'common'
+    - 'clean-code'
+    - 'dead-code'
+    - 'symfony'
+    - 'php71'
+    - 'psr12'

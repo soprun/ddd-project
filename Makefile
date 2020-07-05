@@ -90,6 +90,9 @@ help: ## Display this help screen
 	@grep -h -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
 
+
+
+
 about: ## asd
 	@docker-compose exec app php bin/console about
 
@@ -100,3 +103,12 @@ secret:
 	@php -r "echo bin2hex(random_bytes(16));"
 	@echo
 	@openssl rand -base64 20
+
+code-sniffer: ## dry
+	@docker-compose exec app php vendor/bin/ecs check --xdebug --no-interaction
+
+code-sniffer-fix: ## fix
+	@docker-compose exec app php vendor/bin/ecs check --xdebug --no-interaction --fix
+
+composer-update:
+	@docker-compose exec app composer update
