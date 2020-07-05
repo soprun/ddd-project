@@ -12,16 +12,24 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      #- name: Build the Docker image
-      #  run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
-
-      - name: Build Docker image
+      - name: Build app image
         uses: docker/build-push-action@v1
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
           tag_with_ref: true
           tag_with_sha: true
-          repository: soprun/ddd-project
+          repository: soprun/ddd-project/app
           tags: latest
           dockerfile: ./docker/app/Dockerfile
+
+      - name: Build nginx image
+        uses: docker/build-push-action@v1
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+          tag_with_ref: true
+          tag_with_sha: true
+          repository: soprun/ddd-project/nginx
+          tags: latest
+          dockerfile: ./docker/nginx/Dockerfile
