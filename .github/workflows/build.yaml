@@ -89,5 +89,5 @@ jobs:
         run: composer install --prefer-dist --no-progress --no-suggest
 
       - name: Check Coding Standard
-        run: docker-compose exec app php vendor/bin/ecs check --xdebug --no-interaction
+        run: vendor/bin/ecs check --xdebug --no-interaction
 
