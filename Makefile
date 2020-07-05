@@ -96,3 +96,7 @@ about: ## asd
 env-vars: ## asd
 	@docker-compose exec app php bin/console debug:container --env-vars --show-hidden
 
+secret:
+	@php -r "echo bin2hex(random_bytes(16));"
+	@echo
+	@openssl rand -base64 20
