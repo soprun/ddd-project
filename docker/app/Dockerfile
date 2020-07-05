@@ -3,6 +3,7 @@ FROM php:fpm-alpine
 # installation system packages
 RUN apk add --update --no-cache \
     git \
+    make \
     bash \
     zip \
     unzip
@@ -17,8 +18,7 @@ RUN apk add --update --no-cache --virtual .build-dependencies $PHPIZE_DEPS \
 
 # use the default production configuration
 RUN mv "$PHP_INI_DIR/php.ini-development" "$PHP_INI_DIR/php.ini"
-# RUN ln -s "${PHP_INI_DIR}/php.ini-production" "${PHP_INI_DIR}/php.ini"
-#RUN ln -s "${PHP_INI_DIR}/php.ini-development" "${PHP_INI_DIR}/php.ini"
+COPY ./docker/app/php.conf /etc/php7/php-fpm.conf
 COPY ./docker/app/app.ini "$PHP_INI_DIR/conf.d/app.ini"
 
 # install composer
@@ -30,8 +30,12 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 # install Symfony Flex globally to speed up download of Composer packages (parallelized prefetching)
 RUN set -eux; \
-	composer global require "symfony/flex" --prefer-dist --no-progress --no-suggest --classmap-authoritative; \
-	composer global require "hirak/prestissimo" --prefer-dist --no-progress --no-suggest --classmap-authoritative; \
+    # Symfony CLI
+    # curl -sS https://get.symfony.com/cli/installer | bash; \
+    # mv /root/.symfony/bin/symfony /usr/local/bin/symfony; \
+	composer global require "hirak/prestissimo" --no-progress; \
+	# https://github.com/paratestphp/paratest
+	# composer global require "brianium/paratest" --no-progress; \
 	composer clear-cache
 
 # change working directory
@@ -50,7 +54,7 @@ ENV PATH="${PATH}:/var/app/bin"
 ENV PATH="${PATH}:/var/app/vendor/bin"
 
 # finish composer
-RUN composer dump-autoload --no-scripts --no-dev --optimize
+# RUN composer dump-autoload --no-scripts --no-dev --optimize
 
 # expose port outside
 EXPOSE 9000

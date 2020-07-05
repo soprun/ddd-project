@@ -19,9 +19,6 @@ services:
     container_name: app
     volumes:
       - .:/var/app:rw,cached
-    environment:
-      - APP_ENV=${APP_ENV}
-      - APP_SECRET=${APP_SECRET}
 
   vault:
     image: vault:latest

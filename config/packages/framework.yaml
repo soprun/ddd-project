@@ -1,5 +1,11 @@
+parameters:
+    env(APP_URL): 'http://127.0.0.1'
+    env(APP_DOMAIN): '127.0.0.1'
+    env(APP_RELEASE): 'none'
+    env(APP_SECRET): 'secret'
+
 framework:
-    secret: '%env(APP_SECRET)%'
+    secret: '%env(string:APP_SECRET)%'
     csrf_protection: false
     http_method_override: true
 

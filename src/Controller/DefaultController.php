@@ -10,6 +10,6 @@ final class DefaultController extends AbstractController
 {
     public function index(): Response
     {
-        return new Response('...');
+        return new Response('... : ' . time());
     }
 }
