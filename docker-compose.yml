@@ -9,8 +9,8 @@ services:
     depends_on:
       - app
     ports:
-      - 80:80
-      - 433:443
+      - 2080:80
+      - 20433:443
 
   app:
     build:

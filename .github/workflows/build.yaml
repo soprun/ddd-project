@@ -48,8 +48,11 @@ jobs:
         if: steps.composer-cache.outputs.cache-hit != 'true'
         run: composer install --prefer-dist --no-progress --no-suggest
 
-      - name: Check Symfony requirements
+      - name: Run Symfony requirements
         run: php vendor/bin/requirements-checker
+
+      - name: Check the validation of YAML configuration files
+        run: php vendor/bin/yaml-lint ./config
 
       - name: Run static code analysis
         run: phpstan analyse src --error-format=checkstyle | cs2pr
