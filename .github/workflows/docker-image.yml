@@ -19,8 +19,8 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
           tag_with_ref: true
           tag_with_sha: true
-          repository: soprun/ddd-project/app
-          tags: latest
+          repository: soprun/ddd-project
+          tags: app:latest
           dockerfile: ./docker/app/Dockerfile
 
       - name: Build nginx image
@@ -30,6 +30,6 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
           tag_with_ref: true
           tag_with_sha: true
-          repository: soprun/ddd-project/nginx
-          tags: latest
+          repository: soprun/ddd-project
+          tags: nginx:latest
           dockerfile: ./docker/nginx/Dockerfile
