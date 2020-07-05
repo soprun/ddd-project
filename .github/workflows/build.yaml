@@ -52,6 +52,9 @@ jobs:
       - name: Run Symfony requirements
         run: php vendor/bin/requirements-checker
 
+      - name: Check that arguments injected into services match type declarations
+        run: php bin/console lint:container
+
       - name: Check the validation of YAML configuration files
         run: php vendor/bin/yaml-lint ./config
 
