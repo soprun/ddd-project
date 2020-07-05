@@ -18,17 +18,27 @@ RUN apk add --update --no-cache --virtual .build-dependencies $PHPIZE_DEPS \
 
 # use the default production configuration
 RUN mv "$PHP_INI_DIR/php.ini-development" "$PHP_INI_DIR/php.ini"
+
 COPY ./docker/app/php.conf /etc/php7/php-fpm.conf
 COPY ./docker/app/app.ini "$PHP_INI_DIR/conf.d/app.ini"
+
+# change working directory
+WORKDIR /var/app
 
 # install composer
 # https://getcomposer.org/doc/03-cli.md#composer-allow-superuser
 ENV COMPOSER_ALLOW_SUPERUSER=1
 ENV PATH="${PATH}:/root/.composer/vendor/bin"
+ENV PATH="${PATH}:/var/app/bin"
+ENV PATH="${PATH}:/var/app/vendor/bin"
 
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# install Symfony Flex globally to speed up download of Composer packages (parallelized prefetching)
+# install dependencies
+COPY composer.json composer.json
+COPY composer.lock composer.lock
+COPY symfony.lock symfony.lock
+
 RUN set -eux; \
     # Symfony CLI
     # curl -sS https://get.symfony.com/cli/installer | bash; \
@@ -36,25 +46,16 @@ RUN set -eux; \
 	composer global require "hirak/prestissimo" --no-progress; \
 	# https://github.com/paratestphp/paratest
 	# composer global require "brianium/paratest" --no-progress; \
+	composer install --no-progress --prefer-dist --no-scripts --no-autoloader; \
 	composer clear-cache
-
-# change working directory
-WORKDIR /var/app
-
-# install dependencies
-COPY composer.json composer.json
-COPY composer.lock composer.lock
-COPY symfony.lock symfony.lock
-RUN composer install --prefer-dist --no-scripts --no-autoloader && rm -rf /root/.composer
 
 # copy source files to workdir
 COPY . /var/app
 
-ENV PATH="${PATH}:/var/app/bin"
-ENV PATH="${PATH}:/var/app/vendor/bin"
-
 # finish composer
-RUN composer dump-autoload --no-scripts --no-dev --optimize
+RUN set -eux; \
+    composer dump-autoload --no-scripts --optimize; \
+    composer dump-env dev
 
 # expose port outside
 EXPOSE 9000
