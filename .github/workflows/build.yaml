@@ -53,23 +53,22 @@ jobs:
         run: phpstan analyse src --error-format=checkstyle | cs2pr
 
       - name: Run Unit Tests
-        run: ./vendor/bin/phpunit --coverage-clover build/logs/clover.xml
+        run: php bin/phpunit --no-logging --coverage-clover build/logs/clover.xml
 
+      # TODO: Move to Docker global dependencies.
       - name: Run PHP Coveralls
-        run: php ./vendor/bin/php-coveralls --verbose
+        run: php vendor/bin/php-coveralls --verbose
         env:
           COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
 
-      - name: Compiles .env files to .env.local.php.
-        run: composer symfony:dump-env prod
+      # - name: Compiles .env files to .env.local.php.
+      #   run: composer symfony:dump-env prod
 
-      - name: Put built env vars in artifacts
-        uses: actions/upload-artifact@v1
-        with:
-          name: build
-          path: .env.local.php
-
-      - run: cat .env.local.php
+      # - name: Put built env vars in artifacts
+      #   uses: actions/upload-artifact@v1
+      #   with:
+      #     name: build
+      #     path: .env.local.php
 
   check_composer:
     runs-on: ubuntu-latest

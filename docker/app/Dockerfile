@@ -32,6 +32,7 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 RUN set -eux; \
 	composer global require "symfony/flex" --prefer-dist --no-progress --no-suggest --classmap-authoritative; \
 	composer global require "hirak/prestissimo" --prefer-dist --no-progress --no-suggest --classmap-authoritative; \
+	composer global require "php-coveralls/php-coveralls" --prefer-dist --no-progress --no-suggest --classmap-authoritative; \
 	composer clear-cache
 
 # change working directory
