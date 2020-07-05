@@ -46,7 +46,7 @@ jobs:
 
       - name: Install dependencies
         if: steps.composer-cache.outputs.cache-hit != 'true'
-        run: composer install --prefer-dist --no-progress --no-suggest --dev --no-interaction
+        run: composer install --prefer-dist --no-progress --no-suggest
 
       - name: Check Symfony requirements
         run: php vendor/bin/requirements-checker
