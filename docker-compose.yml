@@ -19,8 +19,8 @@ services:
     #  dockerfile: ./docker/app/Dockerfile
     image: soprun/ddd-project-app:latest
     container_name: app
-    # volumes:
-    #   - .:/var/app:rw,cached
+    volumes:
+      - .:/var/app:rw,cached
 
   vault:
     image: vault:latest
