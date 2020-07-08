@@ -38,6 +38,14 @@ ENV PATH="${PATH}:/root/.composer/vendor/bin"
 ENV PATH="${PATH}:/var/app/bin"
 ENV PATH="${PATH}:/var/app/vendor/bin"
 
+
+# Timezone
+ENV TIMEZONE Europe/Moscow
+ENV PHP_MEMORY_LIMIT 1024M
+ENV MAX_UPLOAD 128M
+ENV PHP_MAX_FILE_UPLOAD 128
+ENV PHP_MAX_POST 128M</blockquote>
+
 #ARG APP_DIR
 #ARG APP_RELEASE
 #ARG APP_ENV

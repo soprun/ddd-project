@@ -31,6 +31,11 @@ Delivery
 Kubernetes Deployment
 ...
 
+
+# To-do list
+- check: `FROM alpine:edge`
+
+
 ---
 
 - https://github.com/symplify/symplify
