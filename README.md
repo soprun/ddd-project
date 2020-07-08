@@ -11,6 +11,18 @@ https://github.com/webdevops/php-docker-boilerplate
 ### Build Development
 - [ ] xdebug
 - [ ] php-coveralls
+- [ ] https://dockerfile.readthedocs.io/en/latest/content/DockerImages/dockerfiles/php.html#php-ini-variables
+
+```bash
+# Symfony CLI
+# curl -LsS https://get.symfony.com/cli/installer | bash; \
+# mv /root/.symfony/bin/symfony /usr/local/bin/symfony; \
+```
+
+```bash
+# https://github.com/paratestphp/paratest
+# composer global require "brianium/paratest" --no-progress; \
+```
 
 ### Build Production
 ...
@@ -37,6 +49,26 @@ Kubernetes Deployment
 # To-do list
 - check: `FROM alpine:edge`
 
+
+```bash
+# ENV TIMEZONE UTC
+# ENV PHP_MEMORY_LIMIT 1024M
+# ENV MAX_UPLOAD 128M
+# ENV PHP_MAX_FILE_UPLOAD 128
+# ENV PHP_MAX_POST 128M</blockquote>
+```
+
+```bash
+
+#RUN \
+#  curl --location --output /usr/local/bin/composer https://getcomposer.org/composer-stable.phar &> /dev/null && \
+#  curl --location --output /usr/local/bin/phpunit https://phar.phpunit.de/phpunit.phar &> /dev/null
+#   chmod +x /usr/local/bin/composer \
+#   chmod +x /usr/local/bin/phpunit
+#   mkdir -p "$COMPOSER_HOME" \
+#   mkdir -p "$COMPOSER_CACHE_DIR"
+
+```
 
 ---
 

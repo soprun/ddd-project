@@ -30,6 +30,4 @@ RUN apk add --update --no-cache \
 # use the default production configuration
 RUN mv "$PHP_INI_DIR/php.ini-development" "${PHP_INI_DIR}/php.ini"
 
-ENV AAAA=AAAA
-
 FROM build AS production

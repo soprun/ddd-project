@@ -11,23 +11,23 @@ services:
     ports:
       - 8000:80
       - 8443:443
-    volumes:
-      - ./app/:/app/
-    env_file:
-      - ./docker/environment.yml
-      - ./docker/environment.development.yml
+    # volumes:
+    #  - .:/var/app
+    # env_file:
+    #  - ./docker/environment.yml
+    #  - ./docker/environment.development.yml
 
   app:
     build:
       context: .
-      dockerfile: ./docker/app/Dockerfile.development
+      dockerfile: ./docker/app/Dockerfile
       target: development
     container_name: app
     volumes:
-      - .:/app
-    env_file:
-      - ./docker/environment.yml
-      - ./docker/environment.development.yml
+      - .:/var/app:rw,cached
+    # env_file:
+    #  - ./docker/environment.yml
+    #  - ./docker/environment.development.yml
 
 #  vault:
 #    image: vault:latest

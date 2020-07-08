@@ -6,6 +6,9 @@ WORKDIR /var/app
 COPY /docker/nginx/app.conf /etc/nginx/conf.d/default.conf
 COPY /docker/nginx/nginx.conf /etc/nginx/nginx.conf
 
+# change working directory
+WORKDIR /var/app
+
 COPY /public /var/app/public
 
 EXPOSE 80 443

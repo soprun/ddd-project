@@ -5,5 +5,9 @@
 # Context environment
 
 # Symfony
-SYMFONY_ENV=prod
-SYMFONY_DEBUG=0
+APP_ENV=prod
+APP_DEBUG=0
+
+#######################################
+# PHP Debugger (xdebug|blackfire|none)
+PHP_DEBUGGER=none
