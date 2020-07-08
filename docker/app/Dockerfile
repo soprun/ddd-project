@@ -11,15 +11,8 @@ FROM php:fpm-alpine AS development
 
 # Context environment
 #######################################
-ENV PATH="${PATH}:${HOME}/.composer/vendor/bin"
 ENV PATH="${PATH}:/var/app/bin"
 ENV PATH="${PATH}:/var/app/vendor/bin"
-
-# Set Composer environment
-#######################################
-ENV COMPOSER_ALLOW_SUPERUSER=1
-# ENV COMPOSER_HOME="${APP_DIR}/var/composer"
-# ENV COMPOSER_CACHE_DIR="${APP_DIR}/var/cache/composer"
 
 # Set application environment
 #######################################
@@ -48,39 +41,53 @@ RUN apk add --update --no-cache --virtual .build-dependencies $PHPIZE_DEPS \
 # Set default configuration
 #######################################
 COPY ./docker/app/php.ini "${PHP_INI_DIR}/app.ini"
+COPY ./docker/app/entrypoint.sh /usr/local/bin/entrypoint.sh
+
+# Set Composer environment
+#######################################
+ENV PATH="${PATH}:${HOME}/.composer/vendor/bin"
+ENV COMPOSER_ALLOW_SUPERUSER=1
+#ENV COMPOSER_HOME="${APP_DIR}/var/composer"
+#ENV COMPOSER_CACHE_DIR="${APP_DIR}/var/cache/composer"
+
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 # Change working directory
 #######################################
 WORKDIR ${APP_DIR}
 
-# Install application dependencies
-#######################################
-COPY composer.json "${APP_DIR}/composer.json"
-COPY composer.lock "${APP_DIR}/composer.lock"
-COPY symfony.lock "${APP_DIR}/symfony.lock"
-
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
-
-RUN set -eu; \
-    # composer config -g github-oauth.github.com <oauthtoken> \
-	composer global require "hirak/prestissimo" --no-progress; \
-	composer install --no-progress --prefer-dist --no-scripts --no-autoloader; \
-	composer clear-cache
-
 # Copy source files to workdir
 #######################################
 COPY . ${APP_DIR}
 
-# Finish composer
+# Install application dependencies
 #######################################
 RUN set -eu; \
-    composer dump-autoload --no-scripts --optimize; \
-    composer dump-env ${APP_ENV}
+    chmod +x /usr/local/bin/entrypoint.sh; \
+    # composer config -g github-oauth.github.com <oauthtoken> \
+	composer global require "hirak/prestissimo" \
+	    --no-progress \
+	    --prefer-dist; \
+	composer install \
+        --no-progress \
+        --prefer-dist \
+        --classmap-authoritative \
+        --apcu-autoloader; \
+	composer clear-cache
+
 
 # Expose port outside
 #######################################
 EXPOSE 9000
 
+# Set entrypoint
+#######################################
+ENTRYPOINT ["entrypoint.sh"]
+
 # Run application
 #######################################
 CMD ["php-fpm"]
+
+# Build: production
+#######################################
+# FROM scratch as production

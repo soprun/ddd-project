@@ -17,6 +17,9 @@ services:
       context: .
       dockerfile: ./docker/app/Dockerfile
       target: development
+      args:
+        APP_DEBUG: "1"
+        APP_ENV: "dev"
     container_name: app
     volumes:
       - .:/var/app:rw,cached
