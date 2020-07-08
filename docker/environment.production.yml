@@ -1,0 +1,9 @@
+#######################################
+# Environment Configuration
+
+#######################################
+# Context environment
+
+# Symfony
+SYMFONY_ENV=prod
+SYMFONY_DEBUG=0

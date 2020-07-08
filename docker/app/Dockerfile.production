@@ -1,0 +1,14 @@
+#++++++++++++++++++++++++++++++++++++++
+# PHP application Docker container
+#++++++++++++++++++++++++++++++++++++++
+
+FROM php:fpm-alpine
+
+# use the default production configuration
+RUN mv "$PHP_INI_DIR/php.ini-production" "${PHP_INI_DIR}/php.ini"
+
+# expose port outside
+EXPOSE 9000
+
+# run application
+CMD ["php-fpm"]

@@ -1,0 +1,20 @@
+#######################################
+# Environment Configuration
+
+#######################################
+# General
+WEB_DOCUMENT_ROOT=/app
+WEB_DOCUMENT_INDEX=index.php
+
+#######################################
+# Context environment
+
+# Symfony
+SYMFONY_ENV=dev
+SYMFONY_DEBUG=0
+
+#######################################
+# PostgreSQL settings
+POSTGRES_USER=dev
+POSTGRES_PASSWORD=dev
+POSTGRES_DATABASE=dev

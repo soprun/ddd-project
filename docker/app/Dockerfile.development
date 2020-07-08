@@ -1,0 +1,35 @@
+#++++++++++++++++++++++++++++++++++++++
+# PHP application Docker container
+#++++++++++++++++++++++++++++++++++++++
+
+FROM php:fpm-alpine AS production
+
+# expose port outside
+EXPOSE 9000
+
+# run application
+CMD ["php-fpm"]
+
+#++++++++++++++++++++++++++++++++++++++
+# PHP application Docker container
+#++++++++++++++++++++++++++++++++++++++
+
+FROM php:fpm-alpine AS development
+
+# installation system packages
+RUN apk add --update --no-cache \
+    git \
+    make \
+    bash \
+    zip \
+    unzip
+
+# use the default production configuration
+RUN mv "$PHP_INI_DIR/php.ini-development" "${PHP_INI_DIR}/php.ini"
+COPY ./docker/app/php.ini "${PHP_INI_DIR}/conf.d/00-app.ini"
+
+# expose port outside
+EXPOSE 9000
+
+# run application
+CMD ["php-fpm"]

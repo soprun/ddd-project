@@ -1,32 +1,38 @@
 version: "3.7"
 
+volumes:
+  postgres-data:
+
+#networks:
+#  default:
+#    external:
+#      name: gateway
+#      # aliases:
+#      #   - alias1
+#      #   - alias3
+
 services:
   nginx:
     build:
       context: .
       dockerfile: ./docker/nginx/Dockerfile
+    # image: soprun/ddd-project-nginx:latest
     container_name: nginx
     depends_on:
       - app
     ports:
-      - 8000:80
-      - 8443:443
-    volumes:
-      - ./app/:/app/
-    env_file:
-      - ./docker/environment.yml
-      - ./docker/environment.development.yml
+      - 800:80
+      - 4330:443
 
   app:
     build:
       context: .
       dockerfile: ./docker/app/Dockerfile
+    # image: soprun/ddd-project-app:latest
     container_name: app
     volumes:
-      - .:/app
-    env_file:
-      - ./docker/environment.yml
-      - ./docker/environment.development.yml
+      - ./docker/bash.bashrc:/etc/bash.bashrc
+      - .:/var/app:rw,cached
 
 #  vault:
 #    image: vault:latest

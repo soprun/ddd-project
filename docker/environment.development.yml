@@ -1,0 +1,13 @@
+#######################################
+# Environment Configuration
+
+#######################################
+# Context environment
+
+# Symfony
+SYMFONY_ENV=dev
+SYMFONY_DEBUG=0
+
+#######################################
+# PHP Debugger (xdebug|blackfire|none)
+PHP_DEBUGGER=xdebug

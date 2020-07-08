@@ -39,12 +39,13 @@ ENV PATH="${PATH}:/var/app/bin"
 ENV PATH="${PATH}:/var/app/vendor/bin"
 
 
+# https://dockerfile.readthedocs.io/en/latest/content/DockerImages/dockerfiles/php.html#php-ini-variables
 # Timezone
-ENV TIMEZONE Europe/Moscow
-ENV PHP_MEMORY_LIMIT 1024M
-ENV MAX_UPLOAD 128M
-ENV PHP_MAX_FILE_UPLOAD 128
-ENV PHP_MAX_POST 128M</blockquote>
+# ENV TIMEZONE Europe/Moscow
+# ENV PHP_MEMORY_LIMIT 1024M
+# ENV MAX_UPLOAD 128M
+# ENV PHP_MAX_FILE_UPLOAD 128
+# ENV PHP_MAX_POST 128M</blockquote>
 
 #ARG APP_DIR
 #ARG APP_RELEASE
@@ -70,7 +71,7 @@ COPY symfony.lock symfony.lock
 
 RUN set -eux; \
     # Symfony CLI
-    # curl -sS https://get.symfony.com/cli/installer | bash; \
+    # curl -LsS https://get.symfony.com/cli/installer | bash; \
     # mv /root/.symfony/bin/symfony /usr/local/bin/symfony; \
 	composer global require "hirak/prestissimo" --no-progress; \
 	# https://github.com/paratestphp/paratest
