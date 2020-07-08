@@ -21,11 +21,12 @@ RUN apk add --update --no-cache --virtual .build-dependencies $PHPIZE_DEPS \
     && pecl clear-cache \
     && apk del .build-dependencies
 
-# use the default production configuration
-RUN mv "$PHP_INI_DIR/php.ini-development" "$PHP_INI_DIR/php.ini"
-
 COPY ./docker/app/php.conf /etc/php7/php-fpm.conf
-COPY ./docker/app/app.ini "$PHP_INI_DIR/conf.d/app.ini"
+COPY ./docker/app/php.ini "${PHP_INI_DIR}/php.ini"
+
+# use the default production configuration
+# RUN mv "$PHP_INI_DIR/php.ini-development" "$PHP_INI_DIR/php.ini"
+# COPY ./docker/app/php.ini "$PHP_INI_DIR/conf.d/app.ini"
 
 # change working directory
 WORKDIR /var/app
@@ -51,6 +52,8 @@ ENV PATH="${PATH}:/var/app/vendor/bin"
 #  COMPOSER_CACHE_DIR="${APP_DIR}/var/cache/composer"
 
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# composer config -g github-oauth.github.com <oauthtoken>
 
 # install dependencies
 COPY composer.json composer.json
