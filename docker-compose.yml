@@ -20,7 +20,8 @@ services:
   app:
     build:
       context: .
-      dockerfile: ./docker/app/Dockerfile
+      dockerfile: ./docker/app/Dockerfile.development
+      target: development
     container_name: app
     volumes:
       - .:/app
