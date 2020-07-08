@@ -2,6 +2,7 @@ ARG APP_DIR
 ARG APP_ENV
 ARG APP_DEBUG
 ARG APP_RELEASE
+ARG APP_SECRET
 
 #++++++++++++++++++++++++++++++++++++++
 # PHP application Docker container
@@ -20,6 +21,7 @@ ENV APP_DIR="${APP_DIR:-/var/app}"
 ENV APP_ENV="${APP_ENV:-dev}"
 ENV APP_DEBUG="${APP_DEBUG:-1}"
 ENV APP_RELEASE="${APP_RELEASE}"
+ENV APP_SECRET="${APP_RELEASE}"
 
 # Installation system packages
 #######################################
