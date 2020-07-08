@@ -1,4 +1,5 @@
-FROM php:fpm-alpine
+### Build: development
+FROM php:fpm-alpine AS builder
 
 # installation system packages
 RUN apk add --update --no-cache \
@@ -7,6 +8,10 @@ RUN apk add --update --no-cache \
     bash \
     zip \
     unzip
+
+#    &&  rm -rf \
+#          /var/cache/apk/* \
+#          /var/lib/apt/lists/*
 
 RUN apk add --update --no-cache --virtual .build-dependencies $PHPIZE_DEPS \
     && pecl install xdebug \
@@ -31,6 +36,19 @@ ENV COMPOSER_ALLOW_SUPERUSER=1
 ENV PATH="${PATH}:/root/.composer/vendor/bin"
 ENV PATH="${PATH}:/var/app/bin"
 ENV PATH="${PATH}:/var/app/vendor/bin"
+
+#ARG APP_DIR
+#ARG APP_RELEASE
+#ARG APP_ENV
+#ARG APP_DEBUG
+
+#ENV \
+#  APP_DIR="${APP_DIR:-/var/app}" \
+#  APP_ENV="${APP_ENV:-dev}" \
+#  APP_DEBUG="${APP_DEBUG:-1}" \
+#  COMPOSER_ALLOW_SUPERUSER="1" \
+#  COMPOSER_HOME="${APP_DIR}/var/composer" \
+#  COMPOSER_CACHE_DIR="${APP_DIR}/var/cache/composer"
 
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
@@ -62,3 +80,11 @@ EXPOSE 9000
 
 # run application
 CMD ["php-fpm"]
+
+#RUN \
+#  curl --location --output /usr/local/bin/composer https://getcomposer.org/composer-stable.phar &> /dev/null && \
+#  curl --location --output /usr/local/bin/phpunit https://phar.phpunit.de/phpunit.phar &> /dev/null
+#   chmod +x /usr/local/bin/composer \
+#   chmod +x /usr/local/bin/phpunit
+#   mkdir -p "$COMPOSER_HOME" \
+#   mkdir -p "$COMPOSER_CACHE_DIR"

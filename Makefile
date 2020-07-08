@@ -115,6 +115,7 @@ composer-update:
 
 
 docker-up:
+	@export COMPOSE_PROJECT_NAME=ddd-project
 	@docker-compose up --build --detach
 
 docker-up-force:
