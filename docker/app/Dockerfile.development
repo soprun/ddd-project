@@ -19,15 +19,4 @@ COPY ./docker/app/php.ini "${PHP_INI_DIR}/conf.d/app.ini"
 
 FROM build AS development
 
-# installation system packages
-RUN apk add --update --no-cache \
-    git \
-    make \
-    bash \
-    zip \
-    unzip
-
-# use the default production configuration
-RUN mv "$PHP_INI_DIR/php.ini-development" "${PHP_INI_DIR}/php.ini"
-
 FROM build AS production

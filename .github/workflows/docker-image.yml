@@ -22,7 +22,6 @@ jobs:
           repository: soprun/ddd-project-app
           tags: latest
           dockerfile: ./docker/app/Dockerfile
-          target: development
 
   build-nginx:
     runs-on: ubuntu-latest

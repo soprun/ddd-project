@@ -1,23 +1,28 @@
-#++++++++++++++++++++++++++++++++++++++
-# PHP application Docker container
-#++++++++++++++++++++++++++++++++++++++
-
 ARG APP_DIR
 ARG APP_ENV
 ARG APP_DEBUG
 ARG APP_RELEASE
 
-FROM php:fpm-alpine AS build
+#++++++++++++++++++++++++++++++++++++++
+# PHP application Docker container
+#++++++++++++++++++++++++++++++++++++++
 
-# https://getcomposer.org/doc/03-cli.md#composer-allow-superuser
-ENV COMPOSER_ALLOW_SUPERUSER=1
-# ENV COMPOSER_HOME="${APP_DIR}/var/composer"
-# ENV COMPOSER_CACHE_DIR="${APP_DIR}/var/cache/composer"
+FROM php:fpm-alpine AS development
 
+#######################################
+# Context environment
 ENV PATH="${PATH}:${HOME}/.composer/vendor/bin"
 ENV PATH="${PATH}:/var/app/bin"
 ENV PATH="${PATH}:/var/app/vendor/bin"
 
+#######################################
+# Set Composer environment
+ENV COMPOSER_ALLOW_SUPERUSER=1
+# ENV COMPOSER_HOME="${APP_DIR}/var/composer"
+# ENV COMPOSER_CACHE_DIR="${APP_DIR}/var/cache/composer"
+
+#######################################
+# Set application environment
 ENV APP_DIR="${APP_DIR:-/var/app}"
 ENV APP_ENV="${APP_ENV:-dev}"
 ENV APP_DEBUG="${APP_DEBUG:-1}"
@@ -39,40 +44,42 @@ RUN apk add --update --no-cache --virtual .build-dependencies $PHPIZE_DEPS \
     && pecl clear-cache \
     && apk del .build-dependencies
 
-# use the default configuration
+#######################################
+# Set default configuration
 COPY ./docker/app/php.ini "${PHP_INI_DIR}/app.ini"
 
-# change working directory
+#######################################
+# Change working directory
 WORKDIR ${APP_DIR}
 
-# install dependencies
-COPY composer.json composer.json
-COPY composer.lock composer.lock
-COPY symfony.lock symfony.lock
+#######################################
+# Install application dependencies
+COPY composer.json "${APP_DIR}/composer.json"
+COPY composer.lock "${APP_DIR}/composer.lock"
+COPY symfony.lock "${APP_DIR}/symfony.lock"
 
-# install composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-RUN set -eux; \
+RUN set -eu; \
     # composer config -g github-oauth.github.com <oauthtoken> \
 	composer global require "hirak/prestissimo" --no-progress; \
 	composer install --no-progress --prefer-dist --no-scripts --no-autoloader; \
 	composer clear-cache
 
-# copy source files to workdir
+#######################################
+# Copy source files to workdir
 COPY . ${APP_DIR}
 
-# finish composer
-RUN set -eux; \
+#######################################
+# Finish composer
+RUN set -eu; \
     composer dump-autoload --no-scripts --optimize; \
-    composer dump-env dev
+    composer dump-env ${APP_ENV}
 
-# expose port outside
+#######################################
+# Expose port outside
 EXPOSE 9000
 
-# run application
+#######################################
+# Run application
 CMD ["php-fpm"]
-
-FROM build AS development
-
-FROM build AS production
