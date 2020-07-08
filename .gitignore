@@ -2,6 +2,7 @@
 
 # files
 .DS_Store
+docker-compose.local.yml
 
 ###> symfony/framework-bundle ###
 /.env.local

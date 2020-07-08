@@ -1,58 +1,15 @@
 version: "3.7"
 
-volumes:
-  postgres-data:
-
-#networks:
-#  default:
-#    external:
-#      name: gateway
-#      # aliases:
-#      #   - alias1
-#      #   - alias3
-
 services:
   nginx:
-    build:
-      context: .
-      dockerfile: ./docker/nginx/Dockerfile
-    # image: soprun/ddd-project-nginx:latest
-    container_name: nginx
-    depends_on:
-      - app
-    ports:
-      - 800:80
-      - 4330:443
+    image: soprun/ddd-project-nginx:latest
+    env_file:
+      - ./docker/environment.yml
+      - ./docker/environment.production.yml
 
   app:
-    build:
-      context: .
-      dockerfile: ./docker/app/Dockerfile
-    # image: soprun/ddd-project-app:latest
-    container_name: app
-    volumes:
-      - ./docker/bash.bashrc:/etc/bash.bashrc
-      - .:/var/app:rw,cached
+    image: soprun/ddd-project-app:latest
+    env_file:
+      - ./docker/environment.yml
+      - ./docker/environment.production.yml
 
-#  vault:
-#    image: vault:latest
-#    volumes:
-#      - ./docker/vault/config:/vault/config
-#      - ./docker/vault/policies:/vault/policies
-#      - ./docker/vault/data:/vault/data
-#    ports:
-#      - 8200:8200
-#    environment:
-#      - VAULT_ADDR
-#      - VAULT_API_ADDR
-#      - VAULT_ADDRESS
-#    cap_add:
-#      - IPC_LOCK
-#    command: vault server -config=/vault/config/vault.json
-
-# blackfire:
-#   image: blackfire/blackfire
-#   environment:
-#     # Exposes BLACKFIRE_SERVER_* environment variables from the host
-#     - BLACKFIRE_SERVER_ID
-#     - BLACKFIRE_SERVER_TOKEN
