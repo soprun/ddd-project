@@ -7,13 +7,26 @@ ARG APP_SECRET
 #++++++++++++++++++++++++++++++++++++++
 # PHP application Docker container
 #++++++++++++++++++++++++++++++++++++++
-FROM composer:1.8.5 as composer
-COPY composer.* /var/app/
-RUN set -xe \
- && composer install --no-dev --no-scripts --no-suggest --no-interaction --prefer-dist --optimize-autoloader
-COPY . /var/app
-RUN composer dump-autoload --no-dev --optimize --classmap-authoritative
+FROM composer:latest AS composer
 
+WORKDIR /var/app
+
+# COPY composer.* /var/app/
+
+COPY ./composer.json /var/app/composer.json
+COPY ./composer.lock /var/app/composer.lock
+COPY ./symfony.lock /var/app/symfony.lock
+
+RUN set -xe; \
+  composer install \
+    --no-dev \
+    --no-scripts \
+    --no-suggest \
+    --no-interaction \
+    --prefer-dist \
+    --optimize-autoloader;
+
+RUN composer dump-autoload --no-dev --optimize --classmap-authoritative
 
 FROM php:fpm-alpine AS development
 
@@ -36,20 +49,21 @@ ENV COMPOSER_ALLOW_SUPERUSER=1
 
 # Installation system packages
 #######################################
-RUN apk add --update --no-cache \
-    git \
-    make \
-    bash \
-    zip \
-    unzip
+#RUN apk add --update --no-cache \
+#    git \
+#    make \
+#    bash \
+#    zip \
+#    unzip
 
 RUN apk add --update --no-cache --virtual .build-dependencies $PHPIZE_DEPS \
-    && pecl install xdebug \
-    && pecl install apcu \
-    && docker-php-ext-install opcache \
-    && docker-php-ext-enable xdebug apcu \
-    && pecl clear-cache \
-    && apk del .build-dependencies
+  bash \
+  && pecl install xdebug \
+  && pecl install apcu \
+  && docker-php-ext-install opcache \
+  && docker-php-ext-enable xdebug apcu \
+  && pecl clear-cache \
+  && apk del .build-dependencies
 
 # Set default configuration
 #######################################
@@ -64,7 +78,7 @@ WORKDIR ${APP_DIR}
 # todo: copy only specifically what we need
 COPY . ${APP_DIR}
 
-COPY --from=composer /app/vendor /app/vendor
+COPY --from=composer /var/app/vendor /var/app/vendor
 
 # Expose port & run application
 #######################################

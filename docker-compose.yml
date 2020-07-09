@@ -22,7 +22,7 @@ services:
         APP_ENV: "dev"
     container_name: app
     volumes:
-      - .:/var/app:rw,cached
+      - .:/var/app
     # env_file:
     #   - ./docker/environment.yml
     #   - ./docker/environment.development.yml
