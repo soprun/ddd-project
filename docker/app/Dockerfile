@@ -52,6 +52,7 @@ WORKDIR ${APP_DIR}
 
 # Copy source files to workdir
 #######################################
+# todo: copy only specifically what we need
 COPY . ${APP_DIR}
 
 # Install application dependencies
