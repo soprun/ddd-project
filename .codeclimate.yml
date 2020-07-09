@@ -1,0 +1,26 @@
+version: "2"
+
+plugins:
+  phpcodesniffer:
+    enabled: true
+  phpmd:
+    enabled: true
+    config:
+      file_extensions:
+        - php
+  phan:
+    enabled: true
+    config:
+      file_extensions: "php"
+  shellcheck:
+    enabled: true
+  duplication:
+    enabled: true
+    config:
+      languages:
+        - php:
+        - javascript:
+
+exclude_patterns:
+  - './vendor/**'
+  - './var/**'
