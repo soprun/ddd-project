@@ -4,10 +4,10 @@ on:
   push:
     branches:
       - master
-    paths:
-      - '!docker/**'
-      - '!docker-compose.production.yml'
-      - '!docker-compose.yml'
+    paths-ignore:
+      - 'docker/**'
+      - 'docker-compose.production.yml'
+      - 'docker-compose.yml'
   pull_request:
     branches:
       - master
