@@ -5,9 +5,9 @@ on:
     branches:
       - master
     paths:
-      - './docker/*'
-      - './docker-compose.production.yml'
-      - './docker-compose.yml'
+      - 'docker/**'
+      - 'docker-compose.production.yml'
+      - 'docker-compose.yml'
 
 jobs:
   build-app:
