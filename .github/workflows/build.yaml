@@ -2,9 +2,11 @@ name: Build application
 
 on:
   push:
-    branches: [ master ]
+    branches:
+      - master
   pull_request:
-    branches: [ master ]
+    branches:
+      - master
 
 env:
   APP_URL: ${{ secrets.APP_URL }}
