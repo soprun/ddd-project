@@ -82,6 +82,15 @@ jobs:
         env:
           COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
 
+      - name: Code Climate Coverage Action
+        uses: paambaati/codeclimate-action@v2.6.0
+        env:
+          CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
+        with:
+          coverageCommand: vendor/bin/phpunit
+          debug: true
+
+
   check_composer:
     runs-on: ubuntu-latest
     name: Check Composer
