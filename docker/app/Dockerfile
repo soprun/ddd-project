@@ -7,7 +7,7 @@ ARG APP_SECRET
 #++++++++++++++++++++++++++++++++++++++
 # PHP application Docker container
 #++++++++++++++++++++++++++++++++++++++
-FROM composer:latest AS composer
+FROM composer:2.0 AS composer
 
 WORKDIR /var/app
 
@@ -17,7 +17,7 @@ COPY ./composer.json /var/app/composer.json
 COPY ./composer.lock /var/app/composer.lock
 COPY ./symfony.lock /var/app/symfony.lock
 
-RUN set -xe; \
+RUN set -eux; \
   composer install \
     --no-dev \
     --no-scripts \
