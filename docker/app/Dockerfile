@@ -22,7 +22,7 @@ ENV \
 # Context environment
 #######################################
 # ENV PATH="${PATH}:${HOME}/.composer/vendor/bin"
-# ENV PATH="${PATH}:${APP_DIR}/bin"
+ENV PATH="${PATH}:${APP_DIR}/bin"
 # ENV PATH="${PATH}:${APP_DIR}/vendor/bin"
 
 # Installation system packages
