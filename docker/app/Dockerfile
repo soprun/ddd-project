@@ -7,6 +7,13 @@ ARG APP_SECRET
 #++++++++++++++++++++++++++++++++++++++
 # PHP application Docker container
 #++++++++++++++++++++++++++++++++++++++
+FROM composer:1.8.5 as composer
+COPY composer.* /var/app/
+RUN set -xe \
+ && composer install --no-dev --no-scripts --no-suggest --no-interaction --prefer-dist --optimize-autoloader
+COPY . /var/app
+RUN composer dump-autoload --no-dev --optimize --classmap-authoritative
+
 
 FROM php:fpm-alpine AS development
 
@@ -18,6 +25,8 @@ ENV \
   APP_DEBUG="${APP_DEBUG:-1}" \
   APP_RELEASE="${APP_RELEASE}"
   # APP_SECRET="${APP_SECRET}" \
+
+ENV COMPOSER_ALLOW_SUPERUSER=1
 
 # Context environment
 #######################################
@@ -55,18 +64,7 @@ WORKDIR ${APP_DIR}
 # todo: copy only specifically what we need
 COPY . ${APP_DIR}
 
-# Install application dependencies
-#######################################
-ENV COMPOSER_ALLOW_SUPERUSER=1
-
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
-
-RUN set -eux; \
-  # composer config -g github-oauth.github.com <oauthtoken> \
-  composer global require "hirak/prestissimo" --no-progress; \
-  # composer global require "brianium/paratest" --no-progress; \
-  composer install --prefer-dist --classmap-authoritative; \
-  composer clear-cache;
+COPY --from=composer /app/vendor /app/vendor
 
 # Expose port & run application
 #######################################
