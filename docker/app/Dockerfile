@@ -63,7 +63,7 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 RUN set -eux; \
   # composer config -g github-oauth.github.com <oauthtoken> \
-  composer global require "hirak/prestissimo" --no-scripts --no-progress; \
+  composer global require "hirak/prestissimo" --no-progress; \
   # composer global require "brianium/paratest" --no-progress; \
   composer install --prefer-dist --classmap-authoritative; \
   composer clear-cache;
