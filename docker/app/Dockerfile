@@ -28,7 +28,7 @@ RUN set -eux; \
 
 RUN composer dump-autoload --no-dev --optimize --classmap-authoritative
 
-FROM php:fpm-alpine AS development
+FROM php:7.4-fpm-alpine AS development
 
 # Application environment
 #######################################
