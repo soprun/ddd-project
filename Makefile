@@ -98,7 +98,8 @@ env-vars: ## asd
 secret:
 	@php -r "echo bin2hex(random_bytes(16));"
 	@echo
-	@openssl rand -base64 20
+	@openssl rand -base64 12
+	@openssl rand -hex 12
 
 code-sniffer: ## dry
 	@docker-compose exec app php vendor/bin/ecs check --xdebug --no-interaction
