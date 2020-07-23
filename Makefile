@@ -107,13 +107,30 @@ code-sniffer: ## dry
 code-sniffer-fix: ## fix
 	@docker-compose exec app php vendor/bin/ecs check --xdebug --no-interaction --fix
 
-composer-update:
-	@docker-compose exec app composer update
-
-
 docker-up:
 	@export COMPOSE_PROJECT_NAME=ddd-project
 	@docker-compose up --build --detach
 
 docker-up-force:
 	@docker-compose up --build --detach --force-recreate --remove-orphans
+
+CONTAINER_COMPOSER := \
+	@docker run --rm --interactive --tty \
+	--env ${COMPOSER_HOME} \
+	--env ${COMPOSER_CACHE_DIR} \
+	--volume ${COMPOSER_HOME:-$HOME/.config/composer}:${COMPOSER_HOME} \
+	--volume ${COMPOSER_CACHE_DIR:-$HOME/.cache/composer}:${COMPOSER_CACHE_DIR} \
+	--volume ${PWD}:/app \
+	composer
+
+composer-check:
+	## Validates a composer.json and composer.lock.
+	@$(CONTAINER_COMPOSER) validate
+	## Check that platform requirements are satisfied.
+	@$(CONTAINER_COMPOSER) check-platform-reqs
+
+composer-update: composer-check ## Upgrades the project dependencies
+	@$(CONTAINER_COMPOSER) update
+
+composer-install: ## Installs the project dependencies
+	@$(CONTAINER_COMPOSER) install
