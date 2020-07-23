@@ -1,18 +1,44 @@
 version: "3.7"
 
+#volumes:
+#  postgresql-persistence:
+#  redis-persistence:
+#  rabbitmq-persistence:
+#  cba-frontend-data:
+
+networks:
+  external-tier:
+    driver: bridge
+  app-tier:
+    driver: bridge
+
 services:
   nginx:
-    image: soprun/ddd-project-nginx:latest
+    container_name: nginx
+    build:
+      context: .
+      dockerfile: ./docker/nginx/Dockerfile
+      target: development
+    volumes:
+      - .:/var/app
     depends_on:
       - app
     ports:
       - 80:80
       - 443:443
-    # env_file:
-    #   - ./docker/environment.yml
-    #   - ./docker/environment.development.yml
+    environment:
+      - APP_ENV
+      - APP_DEBUG
+      - APP_SECRET
+    networks:
+      - app-tier
+      - external-tier
+
+  # app_worker:
+  # ...
 
   app:
+    container_name: app
     build:
       context: .
       dockerfile: ./docker/app/Dockerfile
@@ -20,15 +46,14 @@ services:
       args:
         APP_DEBUG: "1"
         APP_ENV: "dev"
-    container_name: app
     volumes:
       - .:/var/app
-    # env_file:
-    #   - ./docker/environment.yml
-    #   - ./docker/environment.development.yml
+    networks:
+      - app-tier
 
   vault:
     image: vault:latest
+    container_name: vault
     volumes:
       - ./docker/vault/config:/vault/config
       - ./docker/vault/policies:/vault/policies
@@ -42,3 +67,5 @@ services:
     cap_add:
       - IPC_LOCK
     command: vault server -config=/vault/config/vault.json
+    networks:
+      - app-tier
