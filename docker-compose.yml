@@ -19,8 +19,8 @@ services:
       context: .
       dockerfile: ./docker/nginx/Dockerfile
       target: development
-    volumes:
-      - .:/var/app
+    # volumes:
+    #   - .:/var/app:consistent
     depends_on:
       - app
     ports:
@@ -47,7 +47,7 @@ services:
         APP_DEBUG: "1"
         APP_ENV: "dev"
     volumes:
-      - .:/var/app
+      - .:/var/app:cached
     networks:
       - app-tier
 
