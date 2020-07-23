@@ -115,22 +115,22 @@ docker-up-force:
 	@docker-compose up --build --detach --force-recreate --remove-orphans
 
 CONTAINER_COMPOSER := \
-	@docker run --rm --interactive --tty \
+	docker run --rm --interactive --tty \
 	--env ${COMPOSER_HOME} \
 	--env ${COMPOSER_CACHE_DIR} \
-	--volume ${COMPOSER_HOME:-$HOME/.config/composer}:${COMPOSER_HOME} \
-	--volume ${COMPOSER_CACHE_DIR:-$HOME/.cache/composer}:${COMPOSER_CACHE_DIR} \
+	--volume "${COMPOSER_HOME:-$HOME/.config/composer}:/var/composer/" \
+	--volume "${COMPOSER_CACHE_DIR:-$HOME/.cache/composer}:/var/cache/composer" \
 	--volume ${PWD}:/app \
 	composer
 
 composer-check:
 	## Validates a composer.json and composer.lock.
-	@$(CONTAINER_COMPOSER) validate
+	$(CONTAINER_COMPOSER) validate;
 	## Check that platform requirements are satisfied.
-	@$(CONTAINER_COMPOSER) check-platform-reqs
+	$(CONTAINER_COMPOSER) check-platform-reqs;
 
-composer-update: composer-check ## Upgrades the project dependencies
-	@$(CONTAINER_COMPOSER) update
+composer-update: ## Upgrades the project dependencies
+	@ $(CONTAINER_COMPOSER) update;
 
 composer-install: ## Installs the project dependencies
 	@$(CONTAINER_COMPOSER) install
